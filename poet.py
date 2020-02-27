@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 import numpy as np
 import tensorflow as tf
-import genius
 
 
 
@@ -142,18 +141,3 @@ class Poet:
             generated_text.append(self.idx2char[predicted_id])
 
         return start_string + ''.join(generated_text)
-
-def main():
-    # TODO remove token!
-    token = 'q_IbWwdY0HeRaaoD4Xr6q2nDFSktXbZ7dQ8uBkmPVhQ80RcfY6AV9aCTNatHCVlv'
-    g = genius.Genius(token)
-    artists = ['Bob Dylan', 'Bob Marley', 'The Beatles']
-    text = g.get_artists_lyrics(artists, songs_per_artist=2)
-
-    poet = Poet()
-    poet.train_on(text, n_epochs=3)
-    poem = poet.generate(u'Hey ')
-    print(poem)
-
-if __name__ == '__main__':
-    main()
