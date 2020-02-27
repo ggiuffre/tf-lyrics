@@ -1,12 +1,17 @@
 import requests
-import numpy as np
 from bs4 import BeautifulSoup
 
 
 
 class Genius:
     """Interface of a user to the Genius API."""
+
     def __init__(self, token):
+        """Create a Genius object.
+
+        Create a Genius object, endowed with a token that allows it to
+        access the genius.com API."""
+
         self.token = token
 
     def request(self, endpoint, query_data):
@@ -79,19 +84,22 @@ class Genius:
         return set(parts)
 
     def popular_songs(self, artist_name, n_songs=10):
+        """Generate a certain number of popular songs by a certain artist."""
+
         artist_id = self.get_artist_id(artist_name)
         endpoint = '/artists/{id}/songs'.format(id=artist_id)
 
         per_page = 10
         page_num = 0
         retrieved =  0
+
         while retrieved < n_songs:
             page_num += 1
             data = {
                 'sort': 'popularity',
                 'per_page': per_page,
-                'page': page_num
-                }
+                'page': page_num}
+
             songs_response = self.request(endpoint, data)
             limit = min(page_num * per_page, n_songs) - retrieved
             for song in songs_response['response']['songs'][:limit]:
@@ -101,7 +109,7 @@ class Genius:
     def get_song_lyrics(self, song_id):
         """Get the lyrics of a song with a certain Genius ID."""
 
-        lyrics = np.nan
+        lyrics = None
 
         endpoint = '/songs/' + str(song_id)
         song_response = self.request(endpoint, {})
