@@ -1,8 +1,8 @@
+import os
 import genius
 import poet
 
-# TODO remove token!
-token = 'q_IbWwdY0HeRaaoD4Xr6q2nDFSktXbZ7dQ8uBkmPVhQ80RcfY6AV9aCTNatHCVlv'
+token = os.environ['GENIUS_ACCESS_TOKEN']
 g = genius.Genius(token)
 artists = ['Bob Dylan', 'Bob Marley', 'The Beatles']
 text = g.get_artists_lyrics(artists, songs_per_artist=2)
