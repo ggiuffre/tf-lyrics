@@ -1,18 +1,19 @@
-import requests
+import os, requests
 from bs4 import BeautifulSoup
+from progress.bar import Bar
 
 
 
 class Genius:
     """Interface of a user to the Genius API."""
 
-    def __init__(self, token):
+    def __init__(self, token=None):
         """Create a Genius object.
 
         Create a Genius object, endowed with a token that allows it to
         access the genius.com API."""
 
-        self.token = token
+        self.token = token or os.environ['GENIUS_ACCESS_TOKEN']
 
     def request(self, endpoint, query_data):
         """Get a JSON response from the genius.com API."""
@@ -20,7 +21,7 @@ class Genius:
         base_url = 'https://api.genius.com'
         headers = {'Authorization': 'Bearer ' + self.token}
         complete_url = base_url + endpoint
-        response = requests.get(complete_url, data=query_data, headers=headers)
+        response = requests.get(complete_url, params=query_data, headers=headers)
         response = response.json()
 
         return response
@@ -91,20 +92,26 @@ class Genius:
 
         per_page = 10
         page_num = 0
-        retrieved =  0
+        songs_seen = 0
+        songs_chosen = 0
+        titles = []
 
-        while retrieved < n_songs:
+        while songs_chosen < n_songs:
             page_num += 1
             data = {
                 'sort': 'popularity',
-                'per_page': per_page,
-                'page': page_num}
+                'page': page_num,
+                'per_page': per_page}
 
             songs_response = self.request(endpoint, data)
-            limit = min(page_num * per_page, n_songs) - retrieved
+            limit = min(page_num * per_page, n_songs) - songs_chosen
             for song in songs_response['response']['songs'][:limit]:
-                retrieved += 1
-                yield song['id']
+                songs_seen += 1
+                title = song['title']
+                if title not in titles:
+                    titles.append(title)
+                    songs_chosen += 1
+                    yield song['id']
 
     def get_song_lyrics(self, song_id):
         """Get the lyrics of a song with a certain Genius ID."""
@@ -136,12 +143,19 @@ class Genius:
 
         text = ''
         for artist in artists:
-            for s in self.popular_songs(artist, songs_per_artist):
-                print('Downloading lyrics of {} by {}...'.format(s, artist))
-                lyrics = self.get_song_lyrics(s)
-                lyrics = lyrics.replace('’', '\'')
-                lyrics = lyrics.replace('“', '"')
-                lyrics = lyrics.replace('”', '"')
-                text += lyrics
+            with Bar(artist, max=songs_per_artist) as bar:
+                for s in self.popular_songs(artist, songs_per_artist):
+                    bar.next()
+                    lyrics = self.get_song_lyrics(s)
+                    lyrics = lyrics.replace('‘', '\'')
+                    lyrics = lyrics.replace('’', '\'')
+                    lyrics = lyrics.replace('“', '"')
+                    lyrics = lyrics.replace('”', '"')
+                    lyrics = lyrics.replace(' – ', ' - ')
+                    lyrics = lyrics.replace('–', ' - ')
+                    lyrics = lyrics.replace(' — ', ' - ')
+                    lyrics = lyrics.replace('—', ' - ')
+                    lyrics = lyrics.replace('\u200b', '')
+                    text += lyrics
 
         return text

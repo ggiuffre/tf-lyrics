@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from time import time
 import numpy as np
 import tensorflow as tf
 
@@ -8,26 +8,22 @@ import tensorflow as tf
 class Poet:
     """An artificial poet."""
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, embedding_dim=256, rnn_units=1024):
         """Create a Poet.
 
-        Create a Poet, optionally endowed with a name that allows
-        to uniquely identify it."""
+        Create a Poet, optionally specifying its name, embedding
+        dimensionality, and number of recurrent hidden units."""
 
-        if name is None:
-            self.name = str(datetime.now().timestamp()).replace('.', '')
-        else:
-            self.name = name
-
+        self.name = name or str(time()).replace('.', '')
         self.vocab = []
-        self.embedding_dim = 256
-        self.rnn_units = 1024
+        self.embedding_dim = embedding_dim
+        self.rnn_units = rnn_units
         self.model = None
-        self.weights = []
+        self.weights = None
         self.checkpoint_dir = './training_checkpoints' + '_' + self.name
 
-    def set_batch_size(self, batch_size):
-        """Build the Poet's model for a given input batch size."""
+    def build_model(self, batch_size):
+        """Build the Poet's internal model of the world."""
 
         vocab_size = len(self.vocab)
         self.model = tf.keras.Sequential([
@@ -74,7 +70,7 @@ class Poet:
         dataset = self.preprocess(text, training_batch_size)
 
         # build model with adequate training batch_size:
-        self.set_batch_size(training_batch_size)
+        self.build_model(batch_size=training_batch_size)
 
         callbacks = []
         if checkpoints:
@@ -104,11 +100,11 @@ class Poet:
         latest_state = tf.train.latest_checkpoint(self.checkpoint_dir)
         self.model.load_weights(latest_state)
 
-    def generate(self, start_string, n_gen_chars=1000):
+    def generate(self, start_string, n_gen_chars=1000, temperature=1.0):
         """Generate text using the learned model."""
 
         # build model with unit batch_size:
-        self.set_batch_size(1)
+        self.build_model(batch_size=1)
 
         # restore the model parameters:
         self.model.set_weights([w.numpy() for w in self.weights])
@@ -117,17 +113,12 @@ class Poet:
         input_eval = [self.char2idx[s] for s in start_string]
         input_eval = tf.expand_dims(input_eval, 0)
 
-        # declare an empty string to store the results:
         generated_text = []
-
-        # Low temperatures results in more predictable text.
-        # Higher temperatures results in more surprising text.
-        # Experiment to find the best setting.
-        temperature = 1.0
-
         self.model.reset_states()
         for c in range(n_gen_chars):
+
             predictions = self.model(input_eval)
+
             # remove the batch dimension:
             predictions = tf.squeeze(predictions, 0)
 
