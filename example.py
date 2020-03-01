@@ -2,8 +2,7 @@ import os
 import genius
 import poet
 
-token = os.environ['GENIUS_ACCESS_TOKEN']
-g = genius.Genius(token)
+g = genius.Genius()
 artists = ['Bob Dylan', 'Tim Buckley', 'The Beatles']
 text = g.get_artists_lyrics(artists, songs_per_artist=15)
 
