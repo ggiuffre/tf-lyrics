@@ -6,13 +6,15 @@ import tensorflow as tf
 
 
 class Poet:
-    """An artificial poet."""
+    """An artificial poet.
+    """
 
     def __init__(self, name: str = None, embedding_dim: int = 256, rnn_units: int = 1024):
         """Create a Poet.
 
         Create a Poet, optionally specifying its name, embedding
-        dimensionality, and number of recurrent hidden units."""
+        dimensionality, and number of recurrent hidden units.
+        """
 
         self.name = name or str(time()).replace('.', '')
         self.vocab = []
@@ -23,7 +25,8 @@ class Poet:
         self.checkpoint_dir = './training_checkpoints' + '_' + self.name
 
     def build_model(self, batch_size: int = 1) -> None:
-        """Build the Poet's internal model of the world."""
+        """Build the Poet's internal model of the world.
+        """
 
         vocab_size = len(self.vocab)
         self.model = tf.keras.Sequential([
@@ -37,7 +40,8 @@ class Poet:
             ])
 
     def preprocess(self, text: str, batch_size: int) -> tf.data.Dataset:
-        """Preprocess a text corpus for supervised learning."""
+        """Preprocess a text corpus for supervised learning.
+        """
 
         # create mappings from unique characters to indices, and viceversa:
         self.vocab = sorted(set(text))
@@ -63,7 +67,8 @@ class Poet:
         return dataset
 
     def train_on(self, text: str, n_epochs: int = 1, checkpoints: bool = False) -> None:
-        """Train the poet's internal model on a text corpus."""
+        """Train the poet's internal model on a text corpus.
+        """
 
         # preprocess the data and set a couple of other things:
         training_batch_size = 64
@@ -95,13 +100,15 @@ class Poet:
         self.weights = self.model.weights
 
     def restore(self):
-        """Restore the state of the Poet's model from the latest checkpoint."""
+        """Restore the state of the Poet's model from the latest checkpoint.
+        """
 
         latest_state = tf.train.latest_checkpoint(self.checkpoint_dir)
         self.model.load_weights(latest_state)
 
     def generate(self, start_string: str, n_gen_chars: int = 1000, temperature: float = 1.0) -> str:
-        """Generate text using the poet's internal model."""
+        """Generate text using the poet's internal model.
+        """
 
         # build model with unit batch_size:
         self.build_model(batch_size=1)
