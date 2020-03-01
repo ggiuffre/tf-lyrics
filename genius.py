@@ -7,50 +7,49 @@ from progress.bar import Bar
 class Genius:
     """Interface of a user to the Genius API."""
 
-    def __init__(self, token=None):
+    def __init__(self, token; str = None):
         """Create a Genius object.
 
         Create a Genius object, endowed with a token that allows it to
-        access the genius.com API."""
+        access the genius.com API.
+
+        :param token: a token to access the Genius API
+        """
 
         self.token = token or os.environ['GENIUS_ACCESS_TOKEN']
 
-    def request(self, endpoint, query_data):
-        """Get a JSON response from the genius.com API."""
+    def request(self, endpoint: str = '/', params: dict = {}) -> dict:
+        """Get the response to a request sent to the Genius API.
+
+        Get the response of the Genius API to an HTTP GET request. The response
+        is a dictionary. The GET request is sent to an optionally specified
+        end-point, with optional query parameters.
+
+        :param endpoint: the endpoint of the request to the Genius API
+        :param params: a dictionary containing parameters to the request
+        :return: a dictionary representing the response of the API
+        """
 
         base_url = 'https://api.genius.com'
         headers = {'Authorization': 'Bearer ' + self.token}
         complete_url = base_url + endpoint
-        response = requests.get(complete_url, params=query_data, headers=headers)
+        response = requests.get(complete_url, params=params, headers=headers)
         response = response.json()
 
         return response
 
-    def get_song_id(self, song_title, artist_name):
-        """Get the Genius ID of a song by an artist."""
+    def get_artist_id(self, artist_name: str) -> str:
+        """Get the Genius ID of an artist.
 
-        query_data = {'q': song_title + ' ' + artist_name}
-        hits_response = self.request('/search', query_data)
+        Get the unique identifier of an artist in the Genius database, by
+        providing the name of the artist.
 
-        song_id = None
+        :param artist_name: the name of the artist
+        :return: a string that uniquely identifies the artist
+        """
 
-        if hits_response['meta']['status'] == 200:
-            for hit in hits_response['response']['hits']:
-                hit_artist = hit['result']['primary_artist']['name'].lower()
-                artist_name = artist_name.lower()
-                name_parts = Genius.artist_name_parts(artist_name)
-                if (artist_name in hit_artist
-                    or any(name in hit_artist for name in name_parts)):
-                    song_id = hit['result']['id']
-                    break
-
-        return song_id
-
-    def get_artist_id(self, artist_name):
-        """Get the Genius ID of an artist."""
-
-        query_data = {'q': artist_name}
-        hits_response = self.request('/search', query_data)
+        params = {'q': artist_name}
+        hits_response = self.request('/search', params)
 
         artist_id = None
 
@@ -67,25 +66,43 @@ class Genius:
         return artist_id
 
     @staticmethod
-    def artist_name_parts(artist_name, min_length=10):
+    def artist_name_parts(complex_name: str, min_length: int = 10) -> list:
         """Get the names of artists that have been joined into a bigger name.
 
-        For example get ['Sting', 'The Police'] from 'Sting and The Police',
-        or from 'Sting & The Police'."""
+        Get a list containing the names of artists that have been joined to
+        form a larger, composite name: for example get ['Sting', 'The Police']
+        from 'Sting and The Police', or from 'Sting & The Police'. An optional
+        minimum length can be provided, under which no attempts are made to
+        find artist names inside the composite name (which is then assumed to
+        be a non-composite name that happens to contain special characters).
 
-        parts = []
+        :param complex_name: composite name (name containing multiple names)
+        :min_length: the minimum length that a name must have to be split
+        :return: the (sorted) list of artists that form a composite name
+        """
 
-        if len(artist_name) > min_length:
-            parts = ([artist_name]
-                + [name.strip() for name in artist_name.split('&')]
-                + [name.strip() for name in artist_name.split('and')]
-                + [name.strip() for name in artist_name.split('/')]
-                + [name.strip() for name in artist_name.split('-')])
+        parts = [complex_name]
 
-        return set(parts)
+        if len(complex_name) > min_length:
+            parts += (
+                  [name.strip() for name in complex_name.split('&')]
+                + [name.strip() for name in complex_name.split('and')]
+                + [name.strip() for name in complex_name.split('/')]
+                + [name.strip() for name in complex_name.split('-')])
 
-    def popular_songs(self, artist_name, n_songs=10):
-        """Generate a certain number of popular songs by a certain artist."""
+        return sorted(set(parts))
+
+    def popular_songs(self, artist_name: str, n_songs: int = 10) -> str:
+        """Generate the IDs of popular songs by a certain artist.
+
+        One at a time, yield the unique identifiers of popular songs by a
+        certain artist, given the artist's name and the amount of songs to
+        be retrieved.
+
+        :param artist_name: the name of an artist
+        :param n_songs: the amount of songs to be retrieved
+        :yield: a string that uniquely identifies the song
+        """
 
         artist_id = self.get_artist_id(artist_name)
         endpoint = '/artists/{id}/songs'.format(id=artist_id)
@@ -113,8 +130,14 @@ class Genius:
                     songs_chosen += 1
                     yield song['id']
 
-    def get_song_lyrics(self, song_id):
-        """Get the lyrics of a song with a certain Genius ID."""
+    def get_song_lyrics(self, song_id: str) -> str:
+        """Get the lyrics of a song identified by a string.
+
+        Get the lyrics of a song, by providing its identifier on Genius.
+
+        :param song_id: the identifier of a song on Genius
+        :return: the lyrics of that song
+        """
 
         lyrics = None
 
@@ -138,13 +161,22 @@ class Genius:
 
         return lyrics
 
-    def get_artists_lyrics(self, artists, songs_per_artist=10):
-        """Get the most popular lyrics by specific artists."""
+    def get_artists_lyrics(self, artists: list, n_songs: int = 10) -> str:
+        """Get the most popular lyrics by specific artists.
+
+        Get a string containing the most popular lyrics by a specific
+        set of artists, concatenated. The artists are specified by
+        their names in a list, and the number of songs to be retrieved for each artist is specified as an argument.
+
+        :param artists: a list of artist names
+        :param n_songs: the number of songs to be retrieved for each name
+        :return: a string containing lyrics by those artists
+        """
 
         text = ''
         for artist in artists:
-            with Bar(artist, max=songs_per_artist) as bar:
-                for s in self.popular_songs(artist, songs_per_artist):
+            with Bar(artist, max=n_songs) as bar:
+                for s in self.popular_songs(artist, n_songs):
                     bar.next()
                     lyrics = self.get_song_lyrics(s)
                     lyrics = lyrics.replace('‘', '\'')
