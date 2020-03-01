@@ -5,18 +5,35 @@ from progress.bar import Bar
 
 
 class Genius:
-    """Interface of a user to the Genius API."""
+    """Interface of a user to the Genius API.
 
-    def __init__(self, token; str = None):
+    A Genius object is a proxy to access the Genius song lyrics API.
+    Each Genius object has a token with which it can access the API,
+    and provides instance methods to query the API in different ways,
+    each time using its access token.
+
+    Getting the lyrics of a song or set of songs, getting the songs by
+    an artist, and getting an artist's unique ID on the API are among the
+    methods that a Genius object offers.
+    """
+
+    def __init__(self, token: str = None, api_url: str = None):
         """Create a Genius object.
 
         Create a Genius object, endowed with a token that allows it to
-        access the genius.com API.
+        access the genius.com API. If a token is not provided, the Genius
+        object will attempt to get the token from the environment variable
+        'GENIUS_ACCESS_TOKEN'. This variable can be set by adding "export GENIUS_ACCESS_TOKEN='<token here>'" to your .bashrc file, for
+        example. For generality, a custom URL to the Genius API can be
+        provided (with the 'api_url' argument); the default is obviously
+        'https://api.genius.com'.
 
         :param token: a token to access the Genius API
+        :param api_url: a string with the location of the Genius API
         """
 
         self.token = token or os.environ['GENIUS_ACCESS_TOKEN']
+        self.api_url = api_url or 'https://api.genius.com'
 
     def request(self, endpoint: str = '/', params: dict = {}) -> dict:
         """Get the response to a request sent to the Genius API.
@@ -30,9 +47,8 @@ class Genius:
         :return: a dictionary representing the response of the API
         """
 
-        base_url = 'https://api.genius.com'
         headers = {'Authorization': 'Bearer ' + self.token}
-        complete_url = base_url + endpoint
+        complete_url = self.api_url + endpoint
         response = requests.get(complete_url, params=params, headers=headers)
         response = response.json()
 
