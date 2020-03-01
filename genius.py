@@ -5,7 +5,7 @@ from progress.bar import Bar
 
 
 class Genius:
-    """Interface of a user to the Genius API.
+    """A proxy to the Genius API.
 
     A Genius object is a proxy to access the Genius song lyrics API.
     Each Genius object has a token with which it can access the API,
