@@ -177,7 +177,7 @@ class Genius:
 
         return lyrics
 
-    def get_artists_lyrics(self, artists: list, n_songs: int = 10) -> str:
+    def get_artists_lyrics(self, artists: list, per_artist: int = 10) -> str:
         """Get the most popular lyrics by specific artists.
 
         Get a string containing the most popular lyrics by a specific
@@ -185,14 +185,14 @@ class Genius:
         their names in a list, and the number of songs to be retrieved for each artist is specified as an argument.
 
         :param artists: a list of artist names
-        :param n_songs: the number of songs to be retrieved for each name
+        :param per_artist: the number of songs to be retrieved for each name
         :return: a string containing lyrics by those artists
         """
 
         text = ''
         for artist in artists:
-            with Bar(artist, max=n_songs) as bar:
-                for s in self.popular_songs(artist, n_songs):
+            with Bar(artist, max=per_artist) as bar:
+                for s in self.popular_songs(artist, per_artist):
                     bar.next()
                     lyrics = self.get_song_lyrics(s)
                     lyrics = lyrics.replace('‘', '\'')
