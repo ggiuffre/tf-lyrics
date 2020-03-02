@@ -46,6 +46,12 @@ class Poet:
                 return_sequences=True,
                 stateful=True,
                 recurrent_initializer='glorot_uniform'),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.LSTM(self.rnn_units, # GRU / LSTM
+                return_sequences=True,
+                stateful=True,
+                recurrent_initializer='glorot_uniform'),
+            tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Dense(vocab_size)
             ])
 
@@ -67,11 +73,6 @@ class Poet:
         :return: a tf.data.Dataset that relates each character to its successor
         """
 
-        # create mappings from unique characters to indices, and viceversa:
-        self.vocab = sorted(set(text))
-        self.char2idx = {u: i for i, u in enumerate(self.vocab)}
-        self.idx2char = np.array(self.vocab)
-
         # sequences of characters are just batches of characters:
         text_as_int = np.array([self.char2idx[c] for c in text])
         char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
@@ -90,7 +91,7 @@ class Poet:
 
         return dataset
 
-    def train_on(self, text: str, n_epochs: int = 1, checkpoints: bool = False) -> None:
+    def train_on(self, text: str, n_epochs: int = 1, validation_split: float = 0.1, checkpoints: bool = False) -> None:
         """Train the poet's internal model on a text corpus.
 
         Train the poet's internal model of the world (with gradient-based
@@ -100,12 +101,22 @@ class Poet:
 
         :param text: a text corpus made of UTF-8 characters
         :param n_epochs: the number of epochs to train the model
+        :param validation_split: the fraction of text to use as validation data
         :param checkpoints: whether to save the weighs on disk after each epoch
         """
 
+        # create mappings from unique characters to indices, and viceversa:
+        self.vocab = sorted(set(text))
+        self.char2idx = {u: i for i, u in enumerate(self.vocab)}
+        self.idx2char = np.array(self.vocab)
+
         # preprocess the text corpus:
         training_batch_size = 64
-        dataset = self.preprocess(text, training_batch_size)
+        validation_split = 0.1
+        split_index = int(validation_split * len(text))
+        val_text, train_text = text[:split_index], text[split_index:]
+        train_dataset = self.preprocess(train_text, training_batch_size)
+        val_dataset = self.preprocess(val_text, training_batch_size)
 
         # build a TensorFlow model with adequate training batch size:
         self.build_model(batch_size=training_batch_size)
@@ -127,8 +138,9 @@ class Poet:
             loss=loss)
 
         # train the model:
-        history = self.model.fit(dataset,
+        history = self.model.fit(train_dataset,
             epochs=n_epochs,
+            validation_data=val_dataset,
             callbacks=callbacks)
 
         # save the weights just learned by the model:
