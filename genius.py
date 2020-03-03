@@ -57,7 +57,8 @@ class Genius:
         """Get the Genius ID of an artist.
 
         Get the unique identifier of an artist in the Genius database, by
-        providing the name of the artist.
+        providing the name of the artist. Returns -1 if no match can be
+        found.
 
         :param artist_name: the name of the artist
         :return: an integer that uniquely identifies the artist
@@ -201,6 +202,7 @@ class Genius:
                 text += lyrics
 
         # handle common useless characters:
+        text = text.replace('  ', ' ')
         text = text.replace('‘', '\'')
         text = text.replace('’', '\'')
         text = text.replace('“', '"')
