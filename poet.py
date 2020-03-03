@@ -81,7 +81,7 @@ class Poet:
         # sequences of characters are just batches of characters:
         text_as_int = [self.char2idx[c] for c in text]
         char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
-        seq_length = 100 # max length of a sentence for a single input
+        seq_length = 100 # window size of each character sequence
         sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
 
         # associate training features to labels:
