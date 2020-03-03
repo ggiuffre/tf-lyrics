@@ -9,7 +9,7 @@ class Poet:
     """An artificial poet.
 
     A Poet object is an object that wraps a recurrent predictive TensorFlow
-    model, and can learn how to predict the next character in a sequence of
+    model, and can use it to predict the next character in a sequence of
     UTF-8 characters extracted from a possibly large text corpus.
     """
 
