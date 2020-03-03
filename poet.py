@@ -1,5 +1,6 @@
 import os, warnings
 from time import time
+from collections import Counter
 import numpy as np
 import tensorflow as tf
 
@@ -46,16 +47,16 @@ class Poet:
                 return_sequences=True,
                 stateful=True,
                 recurrent_initializer='glorot_uniform'),
-            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Dropout(0.2),
             tf.keras.layers.LSTM(self.rnn_units, # GRU / LSTM
                 return_sequences=True,
                 stateful=True,
                 recurrent_initializer='glorot_uniform'),
-            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Dropout(0.2),
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def preprocess(self, text: str, batch_size: int = 32) -> tf.data.Dataset:
+    def preprocess(self, text: str, batch_size: int = 32) -> object:
         """Preprocess a text corpus for supervised learning.
 
         Given a UTF-8 text string, map each possible sequence of 100 contiguous
@@ -66,18 +67,23 @@ class Poet:
         text corpus.
 
         This method returns a tf.data.Dataset that relates each character to
-        its successor, in "windows" of 100 characters at a time.
+        its successor, in "windows" of 100 characters at a time. If the text
+        corpus is empty, it returns None.
 
         :param text: a text corpus made of UTF-8 characters
         :param batch_size: the number of sequences fed at once to the model
         :return: a tf.data.Dataset that relates each character to its successor
         """
 
+        # if the text corpus is empty, return None:
+        if len(text) == 0:
+            return None
+
         # sequences of characters are just batches of characters:
         text_as_int = np.array([self.char2idx[c] for c in text])
         char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
-        max_seq_length = 100 # max length of a sentence for a single input
-        sequences = char_dataset.batch(max_seq_length + 1, drop_remainder=True)
+        seq_length = 100 # max length of a sentence for a single input
+        sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
 
         # associate training features to labels:
         split_input_label = lambda chunk: (chunk[:-1], chunk[1:])
@@ -91,13 +97,14 @@ class Poet:
 
         return dataset
 
-    def train_on(self, text: str, n_epochs: int = 1, validation_split: float = 0.1, checkpoints: bool = False) -> None:
+    def train_on(self, text: str, n_epochs: int = 1, validation_split: float = 0.0, checkpoints: bool = False) -> None:
         """Train the poet's internal model on a text corpus.
 
-        Train the poet's internal model of the world (with gradient-based
-        optimitazion) on a UTF-8 text corpus, for a specified number of
-        epochs, with or without regularly saving checkpoints of the model's
-        parameters.
+        Train the poet's internal model (with gradient-based optimitazion)
+        on a UTF-8 text corpus, for a specified number of epochs. The model
+        can be trained with or wihout splitting the dataset into training and
+        validation, and with or without regularly saving checkpoints of the
+        model's parameters.
 
         :param text: a text corpus made of UTF-8 characters
         :param n_epochs: the number of epochs to train the model
@@ -105,16 +112,20 @@ class Poet:
         :param checkpoints: whether to save the weighs on disk after each epoch
         """
 
+        # declare the model's vocabulary, and sort it by character occurence:
+        hist = Counter(text)
+        self.vocab = sorted(hist, key=hist.get, reverse=True)
+
         # create mappings from unique characters to indices, and viceversa:
-        self.vocab = sorted(set(text))
         self.char2idx = {u: i for i, u in enumerate(self.vocab)}
         self.idx2char = np.array(self.vocab)
 
-        # preprocess the text corpus:
+        # split the text corpus into training and validation corpora:
         training_batch_size = 64
-        validation_split = 0.1
         split_index = int(validation_split * len(text))
         val_text, train_text = text[:split_index], text[split_index:]
+
+        # preprocess the two corpora:
         train_dataset = self.preprocess(train_text, training_batch_size)
         val_dataset = self.preprocess(val_text, training_batch_size)
 
@@ -131,8 +142,8 @@ class Poet:
                 save_weights_only=True)
             callbacks.append(checkpoint_callback)
 
-        # set some optimization hyper-parameters:
-        loss = lambda t, y: tf.keras.losses.sparse_categorical_crossentropy(t, y, from_logits=True)
+        # set optimization hyper-parameters:
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(
             optimizer='adam',
             loss=loss)
@@ -198,7 +209,7 @@ class Poet:
             # sample the next character:
             predictions = predictions / temperature
             predicted_id = tf.random.categorical(predictions, 1)[-1, 0].numpy()
-            model_output.append(self.idx2char[predicted_id])
+            model_output.append(self.vocab[predicted_id])
 
             # pass the predicted character as the next input to the model,
             # along with the previous hidden state:
