@@ -1,7 +1,6 @@
 import os, warnings
 from time import time
 from collections import Counter
-import numpy as np
 import tensorflow as tf
 
 
@@ -80,7 +79,7 @@ class Poet:
             return None
 
         # sequences of characters are just batches of characters:
-        text_as_int = np.array([self.char2idx[c] for c in text])
+        text_as_int = [self.char2idx[c] for c in text]
         char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
         seq_length = 100 # max length of a sentence for a single input
         sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
@@ -116,9 +115,8 @@ class Poet:
         hist = Counter(text)
         self.vocab = sorted(hist, key=hist.get, reverse=True)
 
-        # create mappings from unique characters to indices, and viceversa:
+        # create a mapping from unique characters to indices:
         self.char2idx = {u: i for i, u in enumerate(self.vocab)}
-        self.idx2char = np.array(self.vocab)
 
         # split the text corpus into training and validation corpora:
         training_batch_size = 64
