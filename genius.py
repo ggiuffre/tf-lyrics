@@ -1,6 +1,5 @@
 import os, requests
 from bs4 import BeautifulSoup
-from progress.bar import Bar
 
 
 
@@ -54,20 +53,20 @@ class Genius:
 
         return response
 
-    def get_artist_id(self, artist_name: str) -> str:
+    def get_artist_id(self, artist_name: str) -> int:
         """Get the Genius ID of an artist.
 
         Get the unique identifier of an artist in the Genius database, by
         providing the name of the artist.
 
         :param artist_name: the name of the artist
-        :return: a string that uniquely identifies the artist
+        :return: an integer that uniquely identifies the artist
         """
 
         params = {'q': artist_name}
         hits_response = self.request('/search', params)
 
-        artist_id = None
+        artist_id = -1
 
         if hits_response['meta']['status'] == 200:
             for hit in hits_response['response']['hits']:
@@ -108,7 +107,7 @@ class Genius:
 
         return sorted(set(parts))
 
-    def popular_songs(self, artist_name: str, n_songs: int = 10) -> str:
+    def popular_songs(self, artist_name: str, n_songs: int = 10) -> int:
         """Generate the IDs of popular songs by a certain artist.
 
         One at a time, yield the unique identifiers of popular songs by a
@@ -117,7 +116,7 @@ class Genius:
 
         :param artist_name: the name of an artist
         :param n_songs: the amount of songs to be retrieved
-        :yield: a string that uniquely identifies the song
+        :yield: an integer that uniquely identifies the song
         """
 
         artist_id = self.get_artist_id(artist_name)
@@ -146,7 +145,10 @@ class Genius:
                     songs_chosen += 1
                     yield song['id']
 
-    def get_song_lyrics(self, song_id: str) -> str:
+            if songs_response['response']['next_page'] is None:
+                return
+
+    def get_song_lyrics(self, song_id: int) -> str:
         """Get the lyrics of a song identified by a string.
 
         Get the lyrics of a song, by providing its identifier on Genius.
@@ -155,7 +157,7 @@ class Genius:
         :return: the lyrics of that song
         """
 
-        lyrics = None
+        lyrics = ''
 
         endpoint = '/songs/' + str(song_id)
         song_response = self.request(endpoint, {})
@@ -190,20 +192,23 @@ class Genius:
         """
 
         text = ''
+
+        # gather lyrics:
         for artist in artists:
-            with Bar(artist, max=per_artist) as bar:
-                for s in self.popular_songs(artist, per_artist):
-                    bar.next()
-                    lyrics = self.get_song_lyrics(s)
-                    lyrics = lyrics.replace('‘', '\'')
-                    lyrics = lyrics.replace('’', '\'')
-                    lyrics = lyrics.replace('“', '"')
-                    lyrics = lyrics.replace('”', '"')
-                    lyrics = lyrics.replace(' – ', ' - ')
-                    lyrics = lyrics.replace('–', ' - ')
-                    lyrics = lyrics.replace(' — ', ' - ')
-                    lyrics = lyrics.replace('—', ' - ')
-                    lyrics = lyrics.replace('\u200b', '')
-                    text += lyrics
+            for s in self.popular_songs(artist, per_artist):
+                print('Downloading {} by {}'.format(s, artist))
+                lyrics = self.get_song_lyrics(s)
+                text += lyrics
+
+        # handle common useless characters:
+        text = text.replace('‘', '\'')
+        text = text.replace('’', '\'')
+        text = text.replace('“', '"')
+        text = text.replace('”', '"')
+        text = text.replace(' – ', ' - ')
+        text = text.replace('–', ' - ')
+        text = text.replace(' — ', ' - ')
+        text = text.replace('—', ' - ')
+        text = text.replace('\u200b', '')
 
         return text
