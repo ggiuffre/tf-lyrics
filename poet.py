@@ -10,7 +10,7 @@ class Poet:
 
     A Poet object is an object that wraps a recurrent predictive TensorFlow
     model, and can learn how to predict the next character in a sequence of
-    characters extracted from a possibly large text corpus.
+    UTF-8 characters extracted from a possibly large text corpus.
     """
 
     def __init__(self, name: str = None, embedding_dim: int = 256, rnn_units: int = 1024):
@@ -91,7 +91,7 @@ class Poet:
         # shuffle the sequences (batches) of characters:
         dataset = dataset.shuffle(len(text))
 
-        # create bacthes of sequences ("batches of batches"):
+        # create batches of sequences ("batches of batches"):
         dataset = dataset.batch(batch_size, drop_remainder=True)
 
         return dataset
@@ -99,9 +99,9 @@ class Poet:
     def train_on(self, text: str, n_epochs: int = 1, validation_split: float = 0.0, checkpoints: bool = False) -> None:
         """Train the poet's internal model on a text corpus.
 
-        Train the poet's internal model (with gradient-based optimitazion)
+        Train the poet's internal model (with gradient-based optimization)
         on a UTF-8 text corpus, for a specified number of epochs. The model
-        can be trained with or wihout splitting the dataset into training and
+        can be trained with or without splitting the dataset into training and
         validation, and with or without regularly saving checkpoints of the
         model's parameters.
 
@@ -111,7 +111,7 @@ class Poet:
         :param checkpoints: whether to save the weighs on disk after each epoch
         """
 
-        # declare the model's vocabulary, and sort it by character occurence:
+        # declare the model's vocabulary, and sort it by character occurrence:
         hist = Counter(text)
         self.vocabulary = sorted(hist, key=hist.get, reverse=True)
 
@@ -199,6 +199,7 @@ class Poet:
         self.model.reset_states()
         for c in range(n_gen_chars):
 
+            # get predictions over characters from the model:
             predictions = self.model(model_input)
 
             # remove the batch dimension:
@@ -209,8 +210,7 @@ class Poet:
             predicted_id = tf.random.categorical(predictions, 1)[-1, 0].numpy()
             model_output.append(self.vocabulary[predicted_id])
 
-            # pass the predicted character as the next input to the model,
-            # along with the previous hidden state:
+            # pass the predicted character as the next input to the model:
             model_input = tf.expand_dims([predicted_id], 0)
 
         return start_string + ''.join(model_output)
