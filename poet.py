@@ -25,7 +25,7 @@ class Poet:
         """
 
         self.name = name or str(time()).replace('.', '')
-        self.vocab = []
+        self.vocabulary = []
         self.embedding_dim = embedding_dim
         self.rnn_units = rnn_units
         self.model = None
@@ -38,7 +38,7 @@ class Poet:
         :param batch_size: the number of inputs to be fed at once to the model
         """
 
-        vocab_size = len(self.vocab)
+        vocab_size = len(self.vocabulary)
         self.model = tf.keras.Sequential([
             tf.keras.layers.Embedding(vocab_size, self.embedding_dim,
                 batch_input_shape=[batch_size, None]),
@@ -113,10 +113,10 @@ class Poet:
 
         # declare the model's vocabulary, and sort it by character occurence:
         hist = Counter(text)
-        self.vocab = sorted(hist, key=hist.get, reverse=True)
+        self.vocabulary = sorted(hist, key=hist.get, reverse=True)
 
         # create a mapping from unique characters to indices:
-        self.char2idx = {u: i for i, u in enumerate(self.vocab)}
+        self.char2idx = {u: i for i, u in enumerate(self.vocabulary)}
 
         # split the text corpus into training and validation corpora:
         training_batch_size = 64
@@ -207,7 +207,7 @@ class Poet:
             # sample the next character:
             predictions = predictions / temperature
             predicted_id = tf.random.categorical(predictions, 1)[-1, 0].numpy()
-            model_output.append(self.vocab[predicted_id])
+            model_output.append(self.vocabulary[predicted_id])
 
             # pass the predicted character as the next input to the model,
             # along with the previous hidden state:
