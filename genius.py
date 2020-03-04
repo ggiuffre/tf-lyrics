@@ -201,7 +201,7 @@ class Genius:
                 lyrics = self.get_song_lyrics(s)
                 text += lyrics
 
-        # handle common useless characters:
+        # handle some superfluous characters:
         text = text.replace('  ', ' ')
         text = text.replace('‘', '\'')
         text = text.replace('’', '\'')
@@ -212,5 +212,6 @@ class Genius:
         text = text.replace(' — ', ' - ')
         text = text.replace('—', ' - ')
         text = text.replace('\u200b', '')
+        text = text.replace('…', '...')
 
         return text
