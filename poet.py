@@ -32,6 +32,31 @@ class Poet:
         self.weights = None
         self.checkpoint_dir = None
 
+    @property
+    def batch_size(self) -> int:
+        """Get the batch size of the poet's internal model.
+
+        Get the model's batch size, i.e. the number of inputs that can be fed
+        at once to the model for traning or evaluation.
+
+        :return: the current batch size
+        """
+
+        return self._batch_size
+
+    @batch_size.setter
+    def batch_size(self, new_size: int) -> None:
+        """Set the batch size of the poet's internal model.
+
+        Set the model's batch size, i.e. the number of inputs that can be fed
+        at once to the model for traning or evaluation.
+
+        :param size: the new batch size
+        """
+
+        self.build_model(batch_size=new_size)
+        self._batch_size = new_size
+
     def build_model(self, batch_size: int = 1) -> None:
         """Build the Poet's internal model of the world.
 
@@ -42,12 +67,12 @@ class Poet:
         self.model = tf.keras.Sequential([
             tf.keras.layers.Embedding(vocab_size, self.embedding_dim,
                 batch_input_shape=[batch_size, None]),
-            tf.keras.layers.LSTM(self.rnn_units, # GRU / LSTM
+            tf.keras.layers.LSTM(self.rnn_units,
                 return_sequences=True,
                 stateful=True,
                 recurrent_initializer='glorot_uniform'),
             tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.LSTM(self.rnn_units, # GRU / LSTM
+            tf.keras.layers.LSTM(self.rnn_units,
                 return_sequences=True,
                 stateful=True,
                 recurrent_initializer='glorot_uniform'),
@@ -127,8 +152,8 @@ class Poet:
         train_dataset = self.preprocess(train_text, training_batch_size)
         val_dataset = self.preprocess(val_text, training_batch_size)
 
-        # build a TensorFlow model with adequate training batch size:
-        self.build_model(batch_size=training_batch_size)
+        # change the internal model to have adequate training batch size:
+        self.batch_size = training_batch_size
 
         callbacks = []
         if checkpoints:
@@ -185,8 +210,8 @@ class Poet:
         :return: a new text
         """
 
-        # build model with unit batch_size:
-        self.build_model(batch_size=1)
+        # change the internal model to have unit batch_size:
+        self.batch_size = 1
 
         # restore the model parameters:
         self.model.set_weights([w.numpy() for w in self.weights])
