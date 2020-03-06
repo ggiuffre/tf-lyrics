@@ -1,4 +1,4 @@
-import os, requests
+import os, requests, random
 from bs4 import BeautifulSoup
 
 
@@ -183,25 +183,39 @@ class Genius:
     def get_artists_lyrics(self, artists: list, per_artist: int = 10) -> str:
         """Get the most popular lyrics by specific artists.
 
-        Get a string containing the most popular lyrics by a specific
-        set of artists, concatenated. The artists are specified by
-        their names in a list, and the number of songs to be retrieved for each artist is specified as an argument.
+        Get a string containing the most popular lyrics by a specified set of
+        artists, shuffled and concatenated. The artists are specified by their
+        names in a list, and the number of songs to be retrieved for each
+        artist is specified as an integer.
 
         :param artists: a list of artist names
         :param per_artist: the number of songs to be retrieved for each name
         :return: a string containing lyrics by those artists
         """
 
-        text = ''
+        songs = []
 
-        # gather lyrics:
+        # gather the IDs of songs to be downloaded:
         for artist in artists:
             for s in self.popular_songs(artist, per_artist):
-                print('Downloading {} by {}'.format(s, artist))
-                lyrics = self.get_song_lyrics(s)
-                text += lyrics
+                print('Adding {} by {}'.format(s, artist))
+                songs.append(s)
 
-        # handle some superfluous characters:
+        text = ''
+
+        # gather the actual lyrics of the songs:
+        random.shuffle(songs)
+        for s in songs:
+            print('Downloading {}'.format(s))
+            lyrics = self.get_song_lyrics(s)
+            text += Genius.clean_unicode(lyrics)
+
+        return text
+
+    @staticmethod
+    def clean_unicode(text):
+        """Clean a unicode text string."""
+
         text = text.replace('  ', ' ')
         text = text.replace('‘', '\'')
         text = text.replace('’', '\'')

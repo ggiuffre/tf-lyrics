@@ -10,27 +10,32 @@ class Poet:
 
     A Poet object is an object that wraps a recurrent predictive TensorFlow
     model, and can use it to predict the next character in a sequence of
-    UTF-8 characters extracted from a possibly large text corpus.
+    unicode characters extracted from a possibly large text corpus.
     """
 
-    def __init__(self, name: str = None, embedding_dim: int = 256, rnn_units: int = 1024):
+    def __init__(self, name: str = None, vocabulary: list = None, embedding_dim: int = 256, rnn_units: int = 1024):
         """Create a Poet.
 
         Create a Poet, optionally specifying its name, embedding
         dimensionality, and number of recurrent hidden units.
 
         :param name: string that uniquely identifies the poet
+        :param vocabulary: the unicode characters accepted by the model
         :param embedding_dim: output dimensionality of the hidden layer
         :param rnn_units: number of units in the hidden layer
         """
 
+        # assign an identifier to the Poet object:
         self.name = name or str(time()).replace('.', '')
-        self.vocabulary = []
+
+        # create the poet's vocabulary and its inverse map:
+        self.vocabulary = vocabulary or []
+        self.char2idx = {ch: idx for idx, ch in enumerate(self.vocabulary)}
+
+        # remember the model's architecture:
         self.embedding_dim = embedding_dim
         self.rnn_units = rnn_units
-        self.model = None
-        self.weights = None
-        self.checkpoint_dir = None
+        self.build_model()
 
     @property
     def batch_size(self) -> int:
@@ -64,6 +69,10 @@ class Poet:
         """
 
         vocab_size = len(self.vocabulary)
+
+        if vocab_size < 1:
+            return
+
         self.model = tf.keras.Sequential([
             tf.keras.layers.Embedding(vocab_size, self.embedding_dim,
                 batch_input_shape=[batch_size, None]),
@@ -83,18 +92,18 @@ class Poet:
     def preprocess(self, text: str, batch_size: int = 32) -> object:
         """Preprocess a text corpus for supervised learning.
 
-        Given a UTF-8 text string, map each possible sequence of 100 contiguous
-        characters to the sequence made of the successors of each of these
-        characters (where the "successor" of a character is the character that
-        comes after it in the text). Optionally provide a batch size that will
-        be used when training the model to predict the next character in the
-        text corpus.
+        Given a unicode text string, map each possible sequence of 100
+        contiguous characters to the sequence comprising the successors of
+        each of these characters (where the "successor" of a character is the
+        character that comes after it in the text). Optionally provide a batch
+        size that will be used when training the model to predict the next
+        character in the text corpus.
 
         This method returns a tf.data.Dataset that relates each character to
         its successor, in "windows" of 100 characters at a time. If the text
         corpus is empty, it returns None.
 
-        :param text: a text corpus made of UTF-8 characters
+        :param text: a text corpus made of unicode characters
         :param batch_size: the number of sequences fed at once to the model
         :return: a tf.data.Dataset that relates each character to its successor
         """
@@ -125,39 +134,38 @@ class Poet:
         """Train the poet's internal model on a text corpus.
 
         Train the poet's internal model (with gradient-based optimization)
-        on a UTF-8 text corpus, for a specified number of epochs. The model
+        on a unicode text corpus, for a specified number of epochs. The model
         can be trained with or without splitting the dataset into training and
         validation, and with or without regularly saving checkpoints of the
         model's parameters.
 
-        :param text: a text corpus made of UTF-8 characters
+        :param text: a text corpus made of unicode characters
         :param n_epochs: the number of epochs to train the model
         :param validation_split: the fraction of text to use as validation data
         :param checkpoints: whether to save the weighs on disk after each epoch
         """
 
-        # declare the model's vocabulary, and sort it by character occurrence:
-        hist = Counter(text)
-        self.vocabulary = sorted(hist, key=hist.get, reverse=True)
-
-        # create a mapping from unique characters to indices:
-        self.char2idx = {u: i for i, u in enumerate(self.vocabulary)}
+        if self.vocabulary == []:
+            # create the poet's vocabulary and its inverse map:
+            self.vocabulary = sorted(set(text))
+            self.char2idx = {ch: idx for idx, ch in enumerate(self.vocabulary)}
 
         # split the text corpus into training and validation corpora:
-        training_batch_size = 64
         split_index = int(validation_split * len(text))
         val_text, train_text = text[:split_index], text[split_index:]
+
+        # change the internal model to have adequate training batch size:
+        training_batch_size = 64
+        self.batch_size = training_batch_size
 
         # preprocess the two corpora:
         train_dataset = self.preprocess(train_text, training_batch_size)
         val_dataset = self.preprocess(val_text, training_batch_size)
 
-        # change the internal model to have adequate training batch size:
-        self.batch_size = training_batch_size
-
         callbacks = []
+
+        # optionally ensure that checkpoints be saved during training:
         if checkpoints:
-            # ensure that checkpoints are saved during training:
             self.checkpoint_dir = './checkpoints' + '_' + self.name
             ckpt_prefix = os.path.join(self.checkpoint_dir, 'ckpt_{epoch}')
             checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
@@ -184,7 +192,7 @@ class Poet:
         """Restore the state of the Poet's model from the latest checkpoint.
 
         If checkpoints have been saved during training, set the Poet's model
-        parameters (weights) to the state of the latest checkpoint taken.
+        parameters (weights) to the state of the latest checkpoint saved.
 
         :raises: ResourceWarning
         """
