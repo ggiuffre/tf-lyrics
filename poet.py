@@ -108,8 +108,10 @@ class Poet:
         :return: a tf.data.Dataset that relates each character to its successor
         """
 
+        text_length = len(text)
+
         # if the text corpus is empty, return None:
-        if len(text) == 0:
+        if text_length == 0:
             return None
 
         # sequences of characters are just batches of characters:
@@ -123,7 +125,8 @@ class Poet:
         dataset = sequences.map(split_input_label)
 
         # shuffle the sequences (batches) of characters:
-        dataset = dataset.shuffle(len(text))
+        dataset_size = tf.ceil(text_length / (seq_length + 1))
+        dataset = dataset.shuffle(dataset_size)
 
         # create batches of sequences ("batches of batches"):
         dataset = dataset.batch(batch_size, drop_remainder=True)
