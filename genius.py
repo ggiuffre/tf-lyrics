@@ -180,17 +180,17 @@ class Genius:
 
         return lyrics
 
-    def get_artists_lyrics(self, artists: list, per_artist: int = 10) -> str:
-        """Get the most popular lyrics by specific artists.
+    def artists_lyrics(self, artists: list, per_artist: int = 10) -> str:
+        """Generate the most popular lyrics by specific artists.
 
-        Get a string containing the most popular lyrics by a specified set of
-        artists, shuffled and concatenated. The artists are specified by their
-        names in a list, and the number of songs to be retrieved for each
-        artist is specified as an integer.
+        Generate a string containing the most popular lyrics by a specified
+        set of artists, shuffled. The artists are specified by their names in
+        a list, and the number of songs to be retrieved for each artist is
+        specified as an integer.
 
         :param artists: a list of artist names
         :param per_artist: the number of songs to be retrieved for each name
-        :return: a string containing lyrics by those artists
+        :yield: a string containing lyrics for one song by those artists
         """
 
         songs = []
@@ -208,9 +208,8 @@ class Genius:
         for s in songs:
             print('Downloading {}'.format(s))
             lyrics = self.get_song_lyrics(s)
-            text += Genius.clean_unicode(lyrics)
-
-        return text
+            text = Genius.clean_unicode(lyrics)
+            yield text
 
     @staticmethod
     def clean_unicode(text):
