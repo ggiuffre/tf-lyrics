@@ -6,9 +6,9 @@ Generate intriguing lyrics with TensorFlow and an internet connection.
 specific artists from [genius.com](https://genius.com/), and train a deep
 neural network to generate text that sounds similar to those lyrics. This
 work was inspired from [The Unreasonable Effectiveness of Recurrent Neural
-Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and [Text
-generation with an RNN]
-(https://www.tensorflow.org/tutorials/text/text_generation), and is mainly
+Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and
+[Text generation with an
+RNN](https://www.tensorflow.org/tutorials/text/text_generation), and is mainly
 intended as an improvement on the data pipeline that takes songs from Genius
 and provides them as training examples to a deep network.
 
