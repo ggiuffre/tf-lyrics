@@ -117,7 +117,8 @@ class LyricsGenerator:
         # sequences of characters are just batches of characters:
         trail  = tf.truncatemod(text_size, seq_length)
         n_seqs = tf.truncatediv(text_size, seq_length)
-        sequences = tf.reshape(text_as_int[:-trail], [n_seqs, seq_length])
+        to_keep = text_size - trail
+        sequences = tf.reshape(text_as_int[:to_keep], [n_seqs, seq_length])
 
         # shuffle the sequences (batches) of characters:
         sequences = tf.random.shuffle(sequences)
