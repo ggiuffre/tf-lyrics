@@ -11,7 +11,7 @@ Example:
 ```python
 g = Genius()
 artists = ['Bob Dylan', 'Tim Buckley', 'The Beatles']
-lyrics = g.artists_lyrics(artists, songs_per_artist=15)
+lyrics = g.artists_lyrics(artists, per_artist=15)
 text = ''.join([l for l in lyrics])
 
 p = Poet()
