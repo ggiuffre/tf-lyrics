@@ -125,7 +125,7 @@ class Poet:
         dataset = sequences.map(split_input_label)
 
         # shuffle the sequences (batches) of characters:
-        dataset_size = tf.ceil(text_length / (seq_length + 1))
+        dataset_size = int(tf.math.ceil(text_length / (seq_length + 1)))
         dataset = dataset.shuffle(dataset_size)
 
         # create batches of sequences ("batches of batches"):
@@ -133,17 +133,50 @@ class Poet:
 
         return dataset
 
-    def train_on(self, text: str, n_epochs: int = 1, validation_split: float = 0.0, checkpoints: bool = False) -> None:
+    def train_on_ds(self, train_dataset, n_epochs = 1, batch_size: int = 32, checkpoints = False):
+        """..."""
+
+        # change the internal model to have adequate training batch size:
+        self.batch_size = train_dataset.element_spec[0].shape[0]
+
+        callbacks = []
+
+        # optionally ensure that checkpoints be saved during training:
+        if checkpoints:
+            self.checkpoint_dir = './checkpoints' + '_' + self.name
+            ckpt_prefix = os.path.join(self.checkpoint_dir, 'ckpt_{epoch}')
+            checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+                filepath=ckpt_prefix,
+                save_weights_only=True)
+            callbacks.append(checkpoint_callback)
+
+        # set optimization hyper-parameters:
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        self.model.compile(
+            optimizer='adam',
+            loss=loss)
+
+        # train the model:
+        history = self.model.fit(train_dataset,
+            epochs=n_epochs,
+            # validation_data=val_dataset,
+            callbacks=callbacks)
+
+        # save the weights just learned by the model:
+        self.weights = self.model.weights
+
+    def train_on(self, text: str, n_epochs: int = 1, batch_size: int = 32, validation_split: float = 0.0, checkpoints: bool = False) -> None:
         """Train the poet's internal model on a text corpus.
 
         Train the poet's internal model (with gradient-based optimization)
-        on a unicode text corpus, for a specified number of epochs. The model
-        can be trained with or without splitting the dataset into training and
-        validation, and with or without regularly saving checkpoints of the
-        model's parameters.
+        on a unicode text corpus. Optionally specify the number of epochs and
+        a batch size. The model can be trained with or without splitting the
+        dataset into training and validation, and with or without regularly
+        saving checkpoints of the model's parameters.
 
         :param text: a text corpus made of unicode characters
         :param n_epochs: the number of epochs to train the model
+        :param batch_size: the size of batches the data will be divided in
         :param validation_split: the fraction of text to use as validation data
         :param checkpoints: whether to save the weighs on disk after each epoch
         """
@@ -158,12 +191,11 @@ class Poet:
         val_text, train_text = text[:split_index], text[split_index:]
 
         # change the internal model to have adequate training batch size:
-        training_batch_size = 64
-        self.batch_size = training_batch_size
+        self.batch_size = batch_size
 
         # preprocess the two corpora:
-        train_dataset = self.preprocess(train_text, training_batch_size)
-        val_dataset = self.preprocess(val_text, training_batch_size)
+        train_dataset = self.preprocess(train_text, batch_size)
+        val_dataset = self.preprocess(val_text, batch_size)
 
         callbacks = []
 
