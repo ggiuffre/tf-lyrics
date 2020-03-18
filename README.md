@@ -3,25 +3,25 @@
 Generate intriguing lyrics with TensorFlow and an internet connection.
 
 This Python API allows you to easily select the lyrics of certain artists
-on [genius.com](https://genius.com/) and train a deep network to generate
+on [genius.com](https://genius.com/), and train a deep network to generate
 text that sounds similar to those lyrics.
 
 Example:
 
 ```python
-g = Genius()
 artists = ['Bob Dylan', 'Tim Buckley', 'The Beatles']
-lyrics = g.artists_lyrics(artists, per_artist=15)
-text = ''.join([l for l in lyrics])
+gen = LyricsGenerator(artists, per_artist=5)
+ds = gen.as_dataset(batch_size=4)
 
 p = Poet()
-p.train_on(text, n_epochs=30)
-poem = p.generate(start_string='Hey ', n_gen_chars=2000)
+p.train_on(ds, n_epochs=20)
+poem = p.generate(start_string='Hey ', n_gen_chars=1000)
 print(poem)
 ```
 
-A `Genius` object is just a proxy to the Genius API, while a `Poet` object is a
-wrapper to a recurrent TensorFlow model.
+A `LyricsGenerator` is an object that makes it easy to create a flexible data
+pipeline from the Genius API directly to your TensorFlow model. A `Poet`
+object is a wrapper around a recurrent TensorFlow model.
 
 *work in progress*
 

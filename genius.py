@@ -1,4 +1,4 @@
-import os, requests, random
+import os, requests
 from bs4 import BeautifulSoup
 
 
@@ -178,53 +178,16 @@ class Genius:
                 # find the 'lyrics' tag:
                 lyrics = html.find('div', class_='lyrics').get_text()
 
+        lyrics = lyrics.replace('  ', ' ')
+        lyrics = lyrics.replace('‘', '\'')
+        lyrics = lyrics.replace('’', '\'')
+        lyrics = lyrics.replace('“', '"')
+        lyrics = lyrics.replace('”', '"')
+        lyrics = lyrics.replace(' – ', ' - ')
+        lyrics = lyrics.replace('–', ' - ')
+        lyrics = lyrics.replace(' — ', ' - ')
+        lyrics = lyrics.replace('—', ' - ')
+        lyrics = lyrics.replace('\u200b', '')
+        lyrics = lyrics.replace('…', '...')
+
         return lyrics
-
-    def artists_lyrics(self, artists: list, per_artist: int = 10) -> str:
-        """Generate the most popular lyrics by specific artists.
-
-        Generate a string containing the most popular lyrics by a specified
-        set of artists, shuffled. The artists are specified by their names in
-        a list, and the number of songs to be retrieved for each artist is
-        specified as an integer.
-
-        :param artists: a list of artist names
-        :param per_artist: the number of songs to be retrieved for each name
-        :yield: a string containing lyrics for one song by those artists
-        """
-
-        songs = []
-
-        # gather the IDs of songs to be downloaded:
-        for artist in artists:
-            for s in self.popular_songs(artist, per_artist):
-                print('Adding {} by {}'.format(s, artist))
-                songs.append(s)
-
-        text = ''
-
-        # gather the actual lyrics of the songs:
-        random.shuffle(songs)
-        for s in songs:
-            print('Downloading {}'.format(s))
-            lyrics = self.get_song_lyrics(s)
-            text = Genius.clean_unicode(lyrics)
-            yield text
-
-    @staticmethod
-    def clean_unicode(text):
-        """Clean a unicode text string."""
-
-        text = text.replace('  ', ' ')
-        text = text.replace('‘', '\'')
-        text = text.replace('’', '\'')
-        text = text.replace('“', '"')
-        text = text.replace('”', '"')
-        text = text.replace(' – ', ' - ')
-        text = text.replace('–', ' - ')
-        text = text.replace(' — ', ' - ')
-        text = text.replace('—', ' - ')
-        text = text.replace('\u200b', '')
-        text = text.replace('…', '...')
-
-        return text

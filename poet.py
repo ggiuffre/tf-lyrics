@@ -1,6 +1,5 @@
 import os, warnings
 from time import time
-from collections import Counter
 import tensorflow as tf
 
 
@@ -89,51 +88,7 @@ class Poet:
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def preprocess(self, text: str, batch_size: int = 32) -> object:
-        """Preprocess a text corpus for supervised learning.
-
-        Given a unicode text string, map each possible sequence of 100
-        contiguous characters to the sequence comprising the successors of
-        each of these characters (where the "successor" of a character is the
-        character that comes after it in the text). Optionally provide a batch
-        size that will be used when training the model to predict the next
-        character in the text corpus.
-
-        This method returns a tf.data.Dataset that relates each character to
-        its successor, in "windows" of 100 characters at a time. If the text
-        corpus is empty, it returns None.
-
-        :param text: a text corpus made of unicode characters
-        :param batch_size: the number of sequences fed at once to the model
-        :return: a tf.data.Dataset that relates each character to its successor
-        """
-
-        text_length = len(text)
-
-        # if the text corpus is empty, return None:
-        if text_length == 0:
-            return None
-
-        # sequences of characters are just batches of characters:
-        text_as_int = [self.char2idx[c] for c in text]
-        char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int)
-        seq_length = 100 # window size of each character sequence
-        sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
-
-        # associate training features to labels:
-        split_input_label = lambda chunk: (chunk[:-1], chunk[1:])
-        dataset = sequences.map(split_input_label)
-
-        # shuffle the sequences (batches) of characters:
-        dataset_size = int(tf.math.ceil(text_length / (seq_length + 1)))
-        dataset = dataset.shuffle(dataset_size)
-
-        # create batches of sequences ("batches of batches"):
-        dataset = dataset.batch(batch_size, drop_remainder=True)
-
-        return dataset
-
-    def train_on_ds(self, train_dataset, n_epochs = 1, batch_size: int = 32, checkpoints = False):
+    def train_on(self, train_dataset, n_epochs = 1, batch_size: int = 32, checkpoints = False):
         """..."""
 
         # change the internal model to have adequate training batch size:
@@ -160,64 +115,6 @@ class Poet:
         history = self.model.fit(train_dataset,
             epochs=n_epochs,
             # validation_data=val_dataset,
-            callbacks=callbacks)
-
-        # save the weights just learned by the model:
-        self.weights = self.model.weights
-
-    def train_on(self, text: str, n_epochs: int = 1, batch_size: int = 32, validation_split: float = 0.0, checkpoints: bool = False) -> None:
-        """Train the poet's internal model on a text corpus.
-
-        Train the poet's internal model (with gradient-based optimization)
-        on a unicode text corpus. Optionally specify the number of epochs and
-        a batch size. The model can be trained with or without splitting the
-        dataset into training and validation, and with or without regularly
-        saving checkpoints of the model's parameters.
-
-        :param text: a text corpus made of unicode characters
-        :param n_epochs: the number of epochs to train the model
-        :param batch_size: the size of batches the data will be divided in
-        :param validation_split: the fraction of text to use as validation data
-        :param checkpoints: whether to save the weighs on disk after each epoch
-        """
-
-        if self.vocabulary == []:
-            # create the poet's vocabulary and its inverse map:
-            self.vocabulary = sorted(set(text))
-            self.char2idx = {ch: idx for idx, ch in enumerate(self.vocabulary)}
-
-        # split the text corpus into training and validation corpora:
-        split_index = int(validation_split * len(text))
-        val_text, train_text = text[:split_index], text[split_index:]
-
-        # change the internal model to have adequate training batch size:
-        self.batch_size = batch_size
-
-        # preprocess the two corpora:
-        train_dataset = self.preprocess(train_text, batch_size)
-        val_dataset = self.preprocess(val_text, batch_size)
-
-        callbacks = []
-
-        # optionally ensure that checkpoints be saved during training:
-        if checkpoints:
-            self.checkpoint_dir = './checkpoints' + '_' + self.name
-            ckpt_prefix = os.path.join(self.checkpoint_dir, 'ckpt_{epoch}')
-            checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-                filepath=ckpt_prefix,
-                save_weights_only=True)
-            callbacks.append(checkpoint_callback)
-
-        # set optimization hyper-parameters:
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(
-            optimizer='adam',
-            loss=loss)
-
-        # train the model:
-        history = self.model.fit(train_dataset,
-            epochs=n_epochs,
-            validation_data=val_dataset,
             callbacks=callbacks)
 
         # save the weights just learned by the model:

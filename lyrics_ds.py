@@ -1,4 +1,3 @@
-import random
 import tensorflow as tf
 from genius import Genius
 
@@ -49,7 +48,7 @@ class LyricsGenerator:
                 self.songs.append(s)
 
         # shuffle the list of songs to be downloaded:
-        random.shuffle(self.songs)
+        self.songs = tf.random.shuffle(self.songs)
 
     def as_dataset(self, batch_size: int = 1) -> tf.data.Dataset:
         """Get a TensorFlow dataset equivalent to this object.
