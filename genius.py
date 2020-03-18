@@ -1,4 +1,5 @@
 import os, requests, random
+import tensorflow as tf
 from bs4 import BeautifulSoup
 
 
@@ -160,7 +161,7 @@ class Genius:
 
         lyrics = ''
 
-        endpoint = '/songs/' + str(song_id)
+        endpoint = '/songs/' + str(song_id.numpy())
         song_response = self.request(endpoint, {})
 
         if song_response['meta']['status'] == 200:
