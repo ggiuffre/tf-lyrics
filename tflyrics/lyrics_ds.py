@@ -1,5 +1,6 @@
 import tensorflow as tf
-from genius import Genius
+from tflyrics.genius import Genius
+from tflyrics.constants import default_vocab
 
 
 
@@ -13,8 +14,6 @@ class LyricsGenerator:
     a LyricsGenerator where "Hello wo" maps to "ello wor", and "ello wor" maps
     to "llo worl".
     """
-
-    default_vocab = ['\n', ' ', '!', '"', '$', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '=', '?', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', ']', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '}', '~', '\xa0', '¡', 'Å', 'É', 'á', 'ã', 'ä', 'ç', 'è', 'é', 'ë', 'í', 'ï', 'ñ', 'ó', 'ô', 'ö', 'ú', 'ü', 'ē', 'Ι', 'ا', 'ح', 'د', 'ل', 'م', 'ه', '\u2005', '\u200e', '…', '\u2060']
 
     def __init__(self, artists: list = [], per_artist: int = 5, vocabulary: list = None, token: str = None):
         """Create a LyricsGenerator object.
@@ -30,7 +29,7 @@ class LyricsGenerator:
         """
 
         # declare what characters the dataset can accept:
-        self.vocabulary = vocabulary or LyricsGenerator.default_vocab
+        self.vocabulary = vocabulary or default_vocab
         keys_tensor = tf.constant(self.vocabulary)
         vals_tensor = tf.range(tf.size(keys_tensor))
         self.char2idx = tf.lookup.StaticHashTable(

@@ -1,6 +1,7 @@
 import os, warnings
 from time import time
 import tensorflow as tf
+from tflyrics.constants import default_vocab
 
 
 
@@ -28,7 +29,7 @@ class Poet:
         self.name = name or str(time()).replace('.', '')
 
         # create the poet's vocabulary and its inverse map:
-        self.vocabulary = vocabulary or []
+        self.vocabulary = vocabulary or default_vocab
         self.char2idx = {ch: idx for idx, ch in enumerate(self.vocabulary)}
 
         # remember the model's architecture:

@@ -1,11 +1,10 @@
-from genius import Genius
-from poet import Poet
+from tflyrics import Poet, LyricsGenerator
 
-g = Genius()
 artists = ['Bob Dylan', 'Tim Buckley', 'The Beatles']
-text = ''.join([t for t in g.artists_lyrics(artists, per_artist=5)])
+gen = LyricsGenerator(artists, per_artist=5)
+ds = gen.as_dataset(batch_size=4)
 
 p = Poet()
-p.train_on(text, n_epochs=10)
-poem = p.generate('Hey ', n_gen_chars=1000)
+p.train_on(ds, n_epochs=10)
+poem = p.generate(start_string='Hey ', n_gen_chars=1000)
 print(poem)
