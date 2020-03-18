@@ -1,5 +1,4 @@
 import os, requests, random
-import tensorflow as tf
 from bs4 import BeautifulSoup
 
 
