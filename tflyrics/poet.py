@@ -9,7 +9,7 @@ class Poet:
     """An artificial poet.
 
     A Poet object is an object that wraps a recurrent predictive TensorFlow
-    model, and can use it to predict the next character in a sequence of
+    model, and with it can predict the next character in a sequence of
     unicode characters extracted from a possibly large text corpus.
     """
 
@@ -20,7 +20,7 @@ class Poet:
         dimensionality, and number of recurrent hidden units.
 
         :param name: string that uniquely identifies the poet
-        :param vocabulary: the unicode characters accepted by the model
+        :param vocabulary: list of unicode characters accepted by the model
         :param embedding_dim: output dimensionality of the hidden layer
         :param rnn_units: number of units in the hidden layer
         """
@@ -63,7 +63,7 @@ class Poet:
         self._batch_size = new_size
 
     def build_model(self, batch_size: int = 1) -> None:
-        """Build the Poet's internal model of the world.
+        """Build the Poet's internal model.
 
         :param batch_size: the number of inputs to be fed at once to the model
         """
@@ -89,12 +89,23 @@ class Poet:
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def train_on(self, train_dataset, n_epochs = 1, batch_size: int = 32, checkpoints = False):
-        """..."""
+    def train_on(self, train_dataset: object, n_epochs: int = 1, checkpoints: bool = False) -> None:
+        """Train the Poet's internal model on a dataset.
+
+        Train the Poet's internal model on a TensorFlow Dataset containing
+        batches of sequences of text (encoded as integers). Optionally specify
+        the number of epochs, and whether a checkpoint of the model should be
+        saved at the end of each training epoch.
+
+        :param train_dataset: TensorFlow Dataset of batches of sequences
+        :param n_epochs: number of training epochs
+        :param checkpoints: whether or not to save checkpoints of the model
+        """
 
         # change the internal model to have adequate training batch size:
         self.batch_size = train_dataset.element_spec[0].shape[0]
 
+        # declare a list of callbacks to be run afer each epoch:
         callbacks = []
 
         # optionally ensure that checkpoints be saved during training:
@@ -115,14 +126,14 @@ class Poet:
         # train the model:
         history = self.model.fit(train_dataset,
             epochs=n_epochs,
-            # validation_data=val_dataset,
+            # validation_data=val_dataset, # TODO
             callbacks=callbacks)
 
-        # save the weights just learned by the model:
+        # make a copy of the weights just learned by the model:
         self.weights = self.model.weights
 
     def restore(self) -> None:
-        """Restore the state of the Poet's model from the latest checkpoint.
+        """Restore the state of the Poet's model from a checkpoint.
 
         If checkpoints have been saved during training, set the Poet's model
         parameters (weights) to the state of the latest checkpoint saved.
@@ -141,26 +152,27 @@ class Poet:
         """Generate text using the poet's internal model.
 
         Generate a specified number of characters by feeding an initial string
-        to the model and using this string as a starting point to sample a
-        character that is likely to appear after the previously generated
-        character.
+        to the model and using this string as a starting point to repeatedly
+        sample a character that is likely to appear after the previously
+        generated character.
 
-        :param start_string: the initial string fed to the model
-        :param n_gen_chars: the number of characters to generate
+        :param start_string: initial string fed to the model
+        :param n_gen_chars: number of characters to generate
         :param temperature: how surprising vs. predictable characters should be
-        :return: a new text
+        :return: a new, generated text
         """
 
         # change the internal model to have unit batch_size:
         self.batch_size = 1
 
-        # restore the model parameters:
+        # restore the model parameters: # TODO: move to bacth_size.setter
         self.model.set_weights([w.numpy() for w in self.weights])
 
-        # encode the starting string to numbers:
+        # convert the starting string to a list of integers:
         model_input = [self.char2idx[s] for s in start_string]
         model_input = tf.expand_dims(model_input, 0)
 
+        # predict characters:
         model_output = []
         self.model.reset_states()
         for c in range(n_gen_chars):
