@@ -26,3 +26,11 @@ print(poem)
 `LyricsGenerator` objects make it easy for you to create efficient data
 pipelines that feed from the Genius API directly into a TensorFlow model. A
 `Poet` object is a wrapper around a recurrent TensorFlow model.
+
+Note that the Genius API requires you to have an **access token**. Without
+that, `tflyrics` won't be able to get lyrics for you. You can get an access
+token for free at [docs.genius.com](https://docs.genius.com/). Once you have
+it you can either pass it under the `token` argument of a `LyricsGenerator`
+constructor, or store it as en environment variable (with `export
+GENIUS_ACCESS_TOKEN='<your token here>'`). `tflyrics` will detect this
+environment variable automatically, if it exists.
