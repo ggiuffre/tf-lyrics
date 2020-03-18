@@ -1,10 +1,16 @@
-# tf-lyrics
+# tflyrics
 
 Generate intriguing lyrics with TensorFlow and an internet connection.
 
-This Python API allows you to easily select the lyrics of certain artists
-on [genius.com](https://genius.com/), and train a deep network to generate
-text that sounds similar to those lyrics.
+`tflyrics` is a Python package that allows you to easily select lyrics of
+specific artists from [genius.com](https://genius.com/), and train a deep
+neural network to generate text that sounds similar to those lyrics. This
+work was inspired from [The Unreasonable Effectiveness of Recurrent Neural
+Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and [Text
+generation with an RNN]
+(https://www.tensorflow.org/tutorials/text/text_generation), and is mainly
+intended as an improvement on the data pipeline that takes songs from Genius
+and provides them as training examples to a deep network.
 
 Example:
 
@@ -19,10 +25,6 @@ poem = p.generate(start_string='Hey ', n_gen_chars=1000)
 print(poem)
 ```
 
-A `LyricsGenerator` is an object that makes it easy to create a flexible data
-pipeline from the Genius API directly to your TensorFlow model. A `Poet`
-object is a wrapper around a recurrent TensorFlow model.
-
-*work in progress*
-
-Inspired by [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and [Text generation with an RNN](https://www.tensorflow.org/tutorials/text/text_generation)
+`LyricsGenerator` objects make it easy for you to create efficient data
+pipelines that feed from the Genius API directly into a TensorFlow model. A
+`Poet` object is a wrapper around a recurrent TensorFlow model.
