@@ -5,9 +5,10 @@ import tensorflow as tf
 
 
 def test_creation():
-    """A Poet object can be instantiated, and all of its arguments are optional."""
+    """A Poet object can be instantiated, and all of its arguments are
+    optional."""
 
-    # create one test value for each argument to the Poet constructor:
+    # create mock values for each argument to the Poet constructor:
     test_args = {
         'name': 'test_name',
         'vocabulary': ['a', 'b', 'c'],
@@ -15,7 +16,7 @@ def test_creation():
         'rnn_units': 17
         }
 
-    # verify that arguments to the Poet constructor are all optional:
+    # verify that arguments to the constructor are all optional:
     args_as_tuple = zip(test_args.keys(), test_args.values())
     for l in range(len(test_args)):
         for args in itertools.combinations(args_as_tuple, l):
