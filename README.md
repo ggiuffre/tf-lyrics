@@ -1,4 +1,4 @@
-# tflyrics
+# tflyrics [![Maintainability](https://api.codeclimate.com/v1/badges/b0845d2d158fc06c1677/maintainability)](https://codeclimate.com/github/ggiuffre/tf-lyrics/maintainability)
 
 Generate intriguing lyrics with TensorFlow and an internet connection.
 
