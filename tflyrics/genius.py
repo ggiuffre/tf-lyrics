@@ -137,6 +137,9 @@ class Genius:
                 'per_page': per_page}
 
             songs_response = self.request(endpoint, data)
+            if songs_response['meta']['status'] != 200:
+                return
+
             limit = min(page_num * per_page, n_songs) - songs_chosen
             for song in songs_response['response']['songs'][:limit]:
                 songs_seen += 1
