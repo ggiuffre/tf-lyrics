@@ -62,6 +62,10 @@ class Poet:
         self.build_model(batch_size=new_size)
         self._batch_size = new_size
 
+        # restore the model parameters:
+        if hasattr(self, 'weights'):
+            self.model.set_weights([w.numpy() for w in self.weights])
+
     def build_model(self, batch_size: int = 1) -> None:
         """Build the Poet's internal model.
 
@@ -164,9 +168,6 @@ class Poet:
 
         # change the internal model to have unit batch_size:
         self.batch_size = 1
-
-        # restore the model parameters: # TODO: move to bacth_size.setter
-        self.model.set_weights([w.numpy() for w in self.weights])
 
         # convert the starting string to a list of integers:
         model_input = [self.char2idx[s] for s in start_string]
