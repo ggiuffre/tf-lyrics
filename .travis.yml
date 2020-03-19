@@ -4,9 +4,9 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-- pytest --cov=. tests/
+- pytest --cov=tflyrics tests/
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
 env:
   global:
     - CC_TEST_REPORTER_ID=807dd45c04e56c2f1e57ca19d2bd9a402039e64915eb166cffde589c106a6fbe
