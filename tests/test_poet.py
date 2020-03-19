@@ -21,7 +21,7 @@ def test_creation():
     for l in range(len(test_args)):
         for args in itertools.combinations(args_as_tuple, l):
             p = Poet(**dict(args_as_tuple))
-            assert type(p) is Poet
+            assert isinstance(p, Poet)
 
 def test_vocabulary():
     """A Poet object can be assigned a non-empty vocabulary, and will otherwise have a default vocabulary of recurring characters."""
