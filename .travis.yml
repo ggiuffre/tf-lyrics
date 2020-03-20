@@ -6,7 +6,7 @@ before_script:
 script:
 - pytest --cov=tflyrics tests/
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
 env:
   global:
     - CC_TEST_REPORTER_ID=807dd45c04e56c2f1e57ca19d2bd9a402039e64915eb166cffde589c106a6fbe
