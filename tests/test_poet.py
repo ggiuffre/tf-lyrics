@@ -1,5 +1,6 @@
 from .context import Poet, default_vocab
 import itertools
+import pytest
 import tensorflow as tf
 
 
@@ -59,16 +60,37 @@ def test_train():
 
     # create a mock dataset:
     ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))
-    ds = ds.repeat(42).batch(4, drop_remainder=True)
+    ds = ds.repeat(33).batch(4, drop_remainder=True)
 
     # train a Poet on the dataset:
-    p = Poet(vocabulary=default_vocab)
+    p = Poet()
     p.train_on(ds)
     text = p.generate('Abc', n_gen_chars=26)
 
     # train a Poet on the dataset for multiple epochs:
-    p = Poet(vocabulary=default_vocab)
+    p = Poet()
     p.train_on(ds, n_epochs=2)
+
+def test_restore():
+    """..."""
+
+    # create a mock dataset:
+    ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))
+    ds = ds.repeat(33).batch(4, drop_remainder=True)
+
+    # train a Poet on the dataset, saving checkpoints:
+    p = Poet()
+    p.train_on(ds, checkpoints=True)
+    w1 = p.weights
+    p.restore()
+    w2 = p.weights
+    assert w1 == w2
+
+    # train a Poet on the dataset, without saving checkpoints:
+    p = Poet()
+    p.train_on(ds, checkpoints=False)
+    with pytest.warns(ResourceWarning):
+        p.restore()
 
 def test_generate():
     """A Poet can generate text."""

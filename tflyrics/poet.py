@@ -145,12 +145,12 @@ class Poet:
         :raises: ResourceWarning
         """
 
-        if self.checkpoint_dir is None:
-            warnings.warn('No checkpoints have been saved for this poet.',
-                warnings.ResourceWarning)
-        else:
+        if hasattr(self, 'checkpoint_dir'):
             latest_state = tf.train.latest_checkpoint(self.checkpoint_dir)
             self.model.load_weights(latest_state)
+        else:
+            warnings.warn('No checkpoints have been saved for this poet.',
+                ResourceWarning)
 
     def generate(self, start_string: str, n_gen_chars: int = 1000, temperature: float = 1.0) -> str:
         """Generate text using the poet's internal model.
