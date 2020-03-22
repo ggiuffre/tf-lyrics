@@ -1,4 +1,5 @@
 import os, requests
+import tensorflow as tf
 from bs4 import BeautifulSoup
 
 
@@ -113,7 +114,7 @@ class Genius:
 
         return sorted(set(parts))
 
-    def popular_songs(self, artist_name: str, n_songs: int = 10) -> int:
+    def popular_songs(self, artist_name: str, n_songs: int = 5) -> int:
         """Generate the IDs of popular songs by a certain artist.
 
         One at a time, yield the unique identifiers of popular songs by a
@@ -166,9 +167,12 @@ class Genius:
         :return: the lyrics of that song
         """
 
+        if isinstance(song_id, tf.Tensor):
+            song_id = song_id.numpy()
+
         lyrics = ''
 
-        endpoint = '/songs/' + str(song_id.numpy())
+        endpoint = '/songs/' + str(song_id)
         song_response = self.request(endpoint, {})
 
         if song_response is not None:
