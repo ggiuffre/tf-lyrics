@@ -94,7 +94,8 @@ class Poet:
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def train_on(self, train_dataset: object, n_epochs: int = 1,
+    def train_on(self, train_dataset: tf.data.Dataset,
+        val_dataset: tf.data.Dataset = None, n_epochs: int = 1,
         checkpoints: bool = False) -> None:
         """Train the Poet's internal model on a dataset.
 
@@ -132,7 +133,7 @@ class Poet:
         # train the model:
         history = self.model.fit(train_dataset,
             epochs=n_epochs,
-            # validation_data=val_dataset, # TODO
+            validation_data=val_dataset,
             callbacks=callbacks)
 
         # make a copy of the weights just learned by the model:
