@@ -22,7 +22,8 @@ class Genius:
         Create a Genius object, endowed with a token that allows it to
         access the genius.com API. If a token is not provided, the Genius
         object will attempt to get the token from the environment variable
-        'GENIUS_ACCESS_TOKEN'. This variable can be set by adding "export GENIUS_ACCESS_TOKEN='<token here>'" to your .bashrc file, for
+        'GENIUS_ACCESS_TOKEN'. This variable can be set by adding "export
+        GENIUS_ACCESS_TOKEN='<token here>'" to your .bashrc file, for
         example. For generality, a custom URL to the Genius API can be
         provided (with the 'api_url' argument); the default is obviously
         'https://api.genius.com'.

@@ -8,14 +8,16 @@ class LyricsGenerator:
     """An adapter between the Genius API and a TF Dataset.
 
     A LyricsGenerator object queries the Genius API and provides a TensorFlow
-    Dataset that can be fed to a model for training. Each sample of the dataset is a sequence of unicode characters taken from song lyrics. More
-    precisely, each example in a LyricsGenerator is a character sequence that
-    maps to a sequence with same length but shifted content: for example,
-    there could be a LyricsGenerator where "Hello wo" maps to "ello wor", and
-    "ello wor" maps to "llo worl".
+    Dataset that can be fed to a model for training. Each sample of the dataset
+    is a sequence of unicode characters taken from song lyrics. More precisely,
+    each example in a LyricsGenerator is a character sequence that maps to a
+    sequence with same length but shifted content: for example, there could be
+    a LyricsGenerator where "Hello wo" maps to "ello wor", and "ello wor" maps
+    to "llo worl".
     """
 
-    def __init__(self, artists: list = [], per_artist: int = 5, vocabulary: list = None, token: str = None):
+    def __init__(self, artists: list = [], per_artist: int = 5,
+        vocabulary: list = None, token: str = None):
         """Create a LyricsGenerator object.
 
         Create a LyricsGenerator object that will provide lyrics from a

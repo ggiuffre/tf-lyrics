@@ -13,7 +13,8 @@ class Poet:
     unicode characters extracted from a possibly large text corpus.
     """
 
-    def __init__(self, name: str = None, vocabulary: list = None, embedding_dim: int = 256, rnn_units: int = 1024):
+    def __init__(self, name: str = None, vocabulary: list = None,
+        embedding_dim: int = 256, rnn_units: int = 1024):
         """Create a Poet.
 
         Create a Poet, optionally specifying its name, embedding
@@ -93,7 +94,8 @@ class Poet:
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def train_on(self, train_dataset: object, n_epochs: int = 1, checkpoints: bool = False) -> None:
+    def train_on(self, train_dataset: object, n_epochs: int = 1,
+        checkpoints: bool = False) -> None:
         """Train the Poet's internal model on a dataset.
 
         Train the Poet's internal model on a TensorFlow Dataset containing
@@ -152,7 +154,8 @@ class Poet:
             warnings.warn('No checkpoints have been saved for this poet.',
                 ResourceWarning)
 
-    def generate(self, start_string: str, n_gen_chars: int = 1000, temperature: float = 1.0) -> str:
+    def generate(self, start_string: str, n_gen_chars: int = 1000,
+        temperature: float = 1.0) -> str:
         """Generate text using the poet's internal model.
 
         Generate a specified number of characters by feeding an initial string
