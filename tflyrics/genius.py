@@ -39,8 +39,9 @@ class Genius:
         """Get the response to a request sent to the Genius API.
 
         Get the response of the Genius API to an HTTP GET request. The response
-        is a dictionary. The GET request is sent to an optionally specified
-        end-point, with optional query parameters.
+        is a dictionary (or None, if the status code was not between 200 and
+        400). The GET request is sent to an optionally specified end-point,
+        with optional query parameters.
 
         :param endpoint: the endpoint of the request to the Genius API
         :param params: a dictionary containing parameters to the request
@@ -50,9 +51,12 @@ class Genius:
         headers = {'Authorization': 'Bearer ' + self.token}
         complete_url = self.api_url + endpoint
         response = requests.get(complete_url, params=params, headers=headers)
-        response = response.json()
 
-        return response
+        json_response = None
+        if response.status_code == 200:
+            json_response = response.json()
+
+        return json_response
 
     def get_artist_id(self, artist_name: str) -> int:
         """Get the Genius ID of an artist.
@@ -70,7 +74,7 @@ class Genius:
 
         artist_id = -1
 
-        if hits_response['meta']['status'] == 200:
+        if hits_response is not None:
             for hit in hits_response['response']['hits']:
                 hit_artist = hit['result']['primary_artist']['name'].lower()
                 artist_name = artist_name.lower()
@@ -138,7 +142,7 @@ class Genius:
                 'per_page': per_page}
 
             songs_response = self.request(endpoint, data)
-            if songs_response['meta']['status'] != 200:
+            if songs_response is None:
                 return
 
             limit = min(page_num * per_page, n_songs) - songs_chosen
@@ -167,7 +171,7 @@ class Genius:
         endpoint = '/songs/' + str(song_id.numpy())
         song_response = self.request(endpoint, {})
 
-        if song_response['meta']['status'] == 200:
+        if song_response is not None:
             song_path = song_response['response']['song']['path']
 
             if song_path is not None:
