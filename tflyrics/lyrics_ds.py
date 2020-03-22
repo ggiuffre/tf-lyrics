@@ -82,8 +82,11 @@ class LyricsGenerator:
             lambda x: tf.size(tf.strings.bytes_split(x)) > 0
             )
 
+        # program the dataset to be cached as soon as possible:
+        cached_dataset = lyrics_dataset.cache()
+
         # get a dataset where each sample is now a substring of song lyrics:
-        processed_dataset = lyrics_dataset.map(
+        processed_dataset = cached_dataset.map(
             lambda x: self.preprocess(x, seq_length)
             ).unbatch()
 
@@ -95,8 +98,7 @@ class LyricsGenerator:
         if batch_size is not None:
             dataset = dataset.batch(batch_size, drop_remainder=True)
 
-        # program the dataset to be cached as soon as possible:
-        return dataset.cache()
+        return dataset
 
     @tf.function
     def preprocess(self, text: str, seq_length: int = 100) -> list:
