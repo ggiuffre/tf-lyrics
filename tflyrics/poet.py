@@ -96,17 +96,21 @@ class Poet:
 
     def train_on(self, train_dataset: tf.data.Dataset,
         val_dataset: tf.data.Dataset = None, n_epochs: int = 1,
-        checkpoints: bool = False) -> None:
+        checkpoints: bool = False) -> dict:
         """Train the Poet's internal model on a dataset.
 
         Train the Poet's internal model on a TensorFlow Dataset containing
         batches of sequences of text (encoded as integers). Optionally specify
         the number of epochs, and whether a checkpoint of the model should be
-        saved at the end of each training epoch.
+        saved at the end of each training epoch. Returns the training history,
+        as a dictionary whose values are lists; each list represents a metric,
+        and each element in the list is the value of that metric at a certain
+        epoch.
 
         :param train_dataset: TensorFlow Dataset of batches of sequences
         :param n_epochs: number of training epochs
         :param checkpoints: whether or not to save checkpoints of the model
+        :return: the training history, as a dictionary of lists
         """
 
         # change the internal model to have adequate training batch size:
@@ -131,13 +135,15 @@ class Poet:
             loss=loss)
 
         # train the model:
-        history = self.model.fit(train_dataset,
+        history_obj = self.model.fit(train_dataset,
             epochs=n_epochs,
             validation_data=val_dataset,
             callbacks=callbacks)
 
         # make a copy of the weights just learned by the model:
         self.weights = self.model.weights
+
+        return history_obj.history
 
     def restore(self) -> None:
         """Restore the state of the Poet's model from a checkpoint.

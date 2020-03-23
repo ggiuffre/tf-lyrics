@@ -63,16 +63,25 @@ def test_train():
     ds = ds.repeat(33).batch(4, drop_remainder=True)
 
     # train a Poet on the dataset:
-    p = Poet()
-    p.train_on(ds)
-    text = p.generate('Abc', n_gen_chars=26)
+    p1 = Poet()
+    hist_1 = p1.train_on(ds)
+    assert isinstance(hist_1, dict)
+    assert 'loss' in hist_1
+    assert isinstance(hist_1['loss'], list)
+    text_1 = p1.generate('Abc', n_gen_chars=26)
 
     # train a Poet on the dataset for multiple epochs:
-    p = Poet()
-    p.train_on(ds, n_epochs=2)
+    p2 = Poet()
+    n_epochs = 2
+    hist_2 = p2.train_on(ds, n_epochs=n_epochs)
+    assert isinstance(hist_2, dict)
+    assert 'loss' in hist_2
+    assert isinstance(hist_2['loss'], list)
+    assert len(hist_2['loss']) == n_epochs
 
 def test_restore():
-    """..."""
+    """It is possible to save a checkpoint at each epoch when training a Poet.
+    In this case, the latest checkpoint can be retrieved."""
 
     # create a mock dataset:
     ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))
