@@ -6,7 +6,7 @@ import sphinx_material
 
 # Path setup
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 
@@ -47,4 +47,4 @@ html_theme_options = {
     'logo_icon': 'subject'
 }
 
-# html_static_path = ['_static']
+tml_static_path = ['_static']
