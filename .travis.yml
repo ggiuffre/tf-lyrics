@@ -7,6 +7,13 @@ script:
 - pytest --cov=tflyrics tests/
 after_script:
   - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
+deploy:
+  provider: pypi
+  user: "__token__"
+  password:
+    secure: "P08oZjKQvxNVDzF6hyML6X9ky4mxayQxgSY/Q4pVTdHX7yszgQnKLvcg7mRQ0MMKDdm50NUFzqDZCA5MtqJOZLn+Imyqhs7r/gYrv1nASlhrCIGibHMx/jcauPzfdXmbDlHanl5xxFoCl7I0QZB+mFqu+GdBP4Qp4x99CoozPtgeTDJOwjsOyrrZUOJV7Im9oaKRpm3NGjJSFY7P38Pt6JtoWiEP+IV+ERM1tG8swRDj/AHdBg35jBgSRdPDa/+rPZhLaMhHgS8KfYk+1IIHqqUrnry0yGdBSRbupRgA+ED2gzJVwI1ECpFcQcHXpGl0xX1jZ1OA5/YqWRGVvFeBQtYuWg6aQyxYDNxnTj9QH7YZgzlcy7uvV3AAq/ZU82Vuo8zLDny6SJ9MqMKJjoE6K/XhUShSgLhcMiFiFZ3Of3DXxvIFVC2yb5klvfhVZL8uAf+DFQ+1C8OauA/x5lW0DYgqrPH1jQnLo9Zbk/8YMC1hrNXB4xBe3izHZGeWEXZU7nIZVDMY6fUDW0zXQZ6wKz1eSjRkNGF+XpAFS/3yvpe87oBEcFGCyFxjn+Q1IyeItPziJ8JsILSWkD7ZxtOLSVeiGUrXF0bh11PwCwmOo7lTdU3n5llYHgBNY05Kpznd6s/RFLDO7+baATZwlGM/VlYohacShiSCDEr0FdRO5Bw="
+  on:
+    tags: true
 env:
   global:
     - CC_TEST_REPORTER_ID=807dd45c04e56c2f1e57ca19d2bd9a402039e64915eb166cffde589c106a6fbe
