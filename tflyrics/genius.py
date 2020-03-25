@@ -187,8 +187,12 @@ class Genius:
                 # remove script tags that pollute the lyrics:
                 [s.extract() for s in html('script')]
 
-                # find the 'lyrics' tag:
-                lyrics = html.find('div', class_='lyrics').get_text()
+                # find the 'lyrics' element:
+                lyrics_div = html.find('div', class_='lyrics')
+
+                # extract the text from the 'lyrics' element:
+                if lyrics_div is not None:
+                	lyrics = lyrics_div.get_text()
 
         lyrics = lyrics.replace('  ', ' ')
         lyrics = lyrics.replace('‘', '\'')
