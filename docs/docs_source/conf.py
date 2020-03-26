@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'tflyrics'
 copyright = '2020, Giorgio Giuffrè'
 author = 'Giorgio Giuffrè'
-release = '0.1'
+release = '0.2.1'
 
 
 

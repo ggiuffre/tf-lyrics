@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='tflyrics',
-    version='0.1',
+    version='0.2.1',
     author='Giorgio Giuffrè',
     author_email='giorgiogiuffre23@gmail.com',
     description='Generate lyrics with TensorFlow and the Genius API',
