@@ -37,3 +37,18 @@ it you can either pass it under the `token` argument of a `LyricsGenerator`
 constructor, or store it as en environment variable (with `export
 GENIUS_ACCESS_TOKEN='<your token here>'`). `tflyrics` will detect this
 environment variable automatically, if it exists.
+
+## Installation
+
+You can install this package with `pip`:
+
+```shell
+pip install -q tflyrics
+```
+
+Or, if you want the latest (possibly not stable) version, you can install
+`tflyrics` from source with:
+
+```shell
+pip install -e git+https://github.com/ggiuffre/tf-lyrics.git#egg=tflyrics
+```
