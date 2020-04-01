@@ -11,7 +11,7 @@ Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and
 [Text generation with an
 RNN](https://www.tensorflow.org/tutorials/text/text_generation).
 
-# Usage
+## Usage
 
 ```python
 from tflyrics import Poet, LyricsGenerator
