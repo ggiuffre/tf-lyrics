@@ -63,7 +63,7 @@ def test_train():
     ds = ds.repeat(33).batch(4, drop_remainder=True)
 
     # train a Poet on the dataset:
-    p1 = Poet()
+    p1 = Poet(rnn_units=256)
     hist_1 = p1.train_on(ds)
     assert isinstance(hist_1, dict)
     assert 'loss' in hist_1
@@ -71,7 +71,7 @@ def test_train():
     text_1 = p1.generate('Abc', n_gen_chars=26)
 
     # train a Poet on the dataset for multiple epochs:
-    p2 = Poet()
+    p2 = Poet(rnn_units=256)
     n_epochs = 2
     hist_2 = p2.train_on(ds, n_epochs=n_epochs)
     assert isinstance(hist_2, dict)

@@ -1,10 +1,11 @@
 import os, requests
 import tensorflow as tf
 from bs4 import BeautifulSoup
+from tflyrics.text_provider import TextProvider
 
 
 
-class Genius:
+class Genius(TextProvider):
     """A proxy to the Genius API.
 
     A Genius object is a proxy to access the Genius song lyrics API.
@@ -114,7 +115,7 @@ class Genius:
 
         return sorted(set(parts))
 
-    def popular_songs(self, artist_name: str, n_songs: int = 5) -> int:
+    def resources(self, artist_name: str, n_songs: int = 5) -> int:
         """Generate the IDs of popular songs by a certain artist.
 
         One at a time, yield the unique identifiers of popular songs by a
@@ -158,7 +159,7 @@ class Genius:
             if songs_response['response']['next_page'] is None:
                 return
 
-    def get_song_lyrics(self, song_id: int) -> str:
+    def get_text(self, song_id: int) -> str:
         """Get the lyrics of a song identified by a string.
 
         Get the lyrics of a song, by providing its identifier on Genius.

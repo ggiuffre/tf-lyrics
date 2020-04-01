@@ -43,7 +43,7 @@ class LyricsGenerator:
         # mark which songs should be downloaded:
         self.songs = []
         for a in artists:
-            for s in self.genius.popular_songs(a, per_artist):
+            for s in self.genius.resources(a, per_artist):
                 print('LyricsGenerator:',
                     'adding {} by {} to wishlist'.format(s, a))
                 self.songs.append(s)
@@ -71,7 +71,7 @@ class LyricsGenerator:
 
         # create a function that maps song IDs to song lyrics:
         def get_song_lyrics(s):
-            l = tf.py_function(self.genius.get_song_lyrics, [s], tf.string)
+            l = tf.py_function(self.genius.get_text, [s], tf.string)
             return tf.data.Dataset.from_tensors(tf.reshape(l, ()))
 
         # create a dataset of song lyrics, where each sample is a song:

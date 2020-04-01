@@ -67,20 +67,20 @@ def test_artist_name_parts():
     names = Genius.artist_name_parts(comp_name, min_length=50)
     assert names == [comp_name]
 
-def test_popular_songs():
+def test_resources():
     """A Genius object can provide a generator of popular songs by a
     specified artist, where each element is the Genius ID of one song by that
     artist."""
 
     g = Genius()
-    for song in g.popular_songs('Maroon 5'):
+    for song in g.resources('Maroon 5'):
         assert isinstance(song, int)
 
     n_songs = 4
-    gen = g.popular_songs('James Blake', n_songs=n_songs)
+    gen = g.resources('James Blake', n_songs=n_songs)
     assert len(list(gen)) <= n_songs
 
-    gen = g.popular_songs('tRqZDkVuppLYZcSplOOn')
+    gen = g.resources('tRqZDkVuppLYZcSplOOn')
     assert len(list(gen)) == 0
 
 def test_get_song_lyrics():
@@ -89,5 +89,5 @@ def test_get_song_lyrics():
 
     g = Genius()
     song_id = 262016
-    lyrics = g.get_song_lyrics(song_id)
+    lyrics = g.get_text(song_id)
     assert isinstance(lyrics, str)
