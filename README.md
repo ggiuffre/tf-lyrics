@@ -11,7 +11,7 @@ Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) and
 [Text generation with an
 RNN](https://www.tensorflow.org/tutorials/text/text_generation).
 
-Example:
+# Usage
 
 ```python
 from tflyrics import Poet, LyricsGenerator
@@ -29,6 +29,9 @@ print(poem)
 Quick paraphrase: a `LyricsGenerator` object makes it easy for you to create a
 data pipeline that feeds from the Genius API directly into a recurrent neural
 network; a `Poet` object is a wrapper around a recurrent neural network.
+
+Another, more data-intensive example can be found on
+[Google Colab](https://colab.research.google.com/drive/1OIYUbRawG5YEuQMunrR6Ox8S2UVI_Q6E).
 
 Note that the Genius API requires you to have an **access token**. Without
 that, `tflyrics` won't be able to get lyrics for you. You can get an access

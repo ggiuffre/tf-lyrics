@@ -1,4 +1,4 @@
-# Generating tflyrics documentation
+# Generating documentation for `tflyrics`
 
 In order to generate HTML documentation for `tflyrics`, you need to install
 some additional packages:
