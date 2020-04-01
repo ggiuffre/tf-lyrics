@@ -46,7 +46,7 @@ def test_num_songs():
     artists = ['Bob Dylan', 'Shabazz Palaces']
     per_artist = 3
     gen = LyricsGenerator(artists=artists, per_artist=per_artist)
-    assert len(artists) * per_artist <= len(gen.songs)
+    assert len(gen.songs) <= len(artists) * per_artist
 
 def test_fake_artist():
     """A LyricsGenerator has an empty list of songs, if asked to collect
