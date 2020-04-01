@@ -11,6 +11,7 @@ Reference
 
    reference/poet
    reference/lyricsgenerator
+   reference/textprovider
    reference/genius
 
 
