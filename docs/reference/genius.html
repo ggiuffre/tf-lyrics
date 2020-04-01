@@ -45,7 +45,7 @@
   
   
   
-    <title>The Genius class &#8212; tflyrics 0.1 documentation</title>
+    <title>The Genius class &#8212; tflyrics 0.2.1 documentation</title>
     <link rel="stylesheet" href="../_static/material.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -88,7 +88,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../index.html" title="tflyrics 0.1 documentation"
+        <a href="../index.html" title="tflyrics 0.2.1 documentation"
            class="md-header-nav__button md-logo">
           
             <i class="md-icon">subject</i>
@@ -100,7 +100,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">tflyrics 0.1 documentation</span>
+          <span class="md-header-nav__topic">tflyrics 0.2.1 documentation</span>
           <span class="md-header-nav__topic"> The Genius class </span>
         </div>
       </div>
@@ -163,7 +163,7 @@
   <nav class="md-tabs" data-md-component="tabs">
     <div class="md-tabs__inner md-grid">
       <ul class="md-tabs__list">
-          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">tflyrics 0.1 documentation</a></li>
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">tflyrics 0.2.1 documentation</a></li>
       </ul>
     </div>
   </nav>
@@ -175,13 +175,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../index.html" title="tflyrics 0.1 documentation" class="md-nav__button md-logo">
+    <a href="../index.html" title="tflyrics 0.2.1 documentation" class="md-nav__button md-logo">
       
         <i class="md-icon">subject</i>
       
     </a>
     <a href="../index.html"
-       title="tflyrics 0.1 documentation">tflyrics 0.1 documentation</a>
+       title="tflyrics 0.2.1 documentation">tflyrics 0.2.1 documentation</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/ggiuffre/tf-lyrics" title="Go to repository" class="md-source" data-md-source="github">
@@ -276,8 +276,8 @@ found.</p>
 </dl>
 </dd></dl>
 <dl class="method">
-<dt id="tflyrics.genius.Genius.get_song_lyrics">
-<code class="sig-name descname">get_song_lyrics</code><span class="sig-paren">(</span><em class="sig-param">song_id: int</em><span class="sig-paren">)</span> → str<a class="headerlink" href="#tflyrics.genius.Genius.get_song_lyrics" title="Permalink to this definition">¶</a></dt>
+<dt id="tflyrics.genius.Genius.get_text">
+<code class="sig-name descname">get_text</code><span class="sig-paren">(</span><em class="sig-param">song_id: int</em><span class="sig-paren">)</span> → str<a class="headerlink" href="#tflyrics.genius.Genius.get_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the lyrics of a song identified by a string.</p>
 <p>Get the lyrics of a song, by providing its identifier on Genius.</p>
 <dl class="field-list simple">
@@ -286,25 +286,6 @@ found.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the lyrics of that song</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="method">
-<dt id="tflyrics.genius.Genius.popular_songs">
-<code class="sig-name descname">popular_songs</code><span class="sig-paren">(</span><em class="sig-param">artist_name: str</em>, <em class="sig-param">n_songs: int = 5</em><span class="sig-paren">)</span> → int<a class="headerlink" href="#tflyrics.genius.Genius.popular_songs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate the IDs of popular songs by a certain artist.</p>
-<p>One at a time, yield the unique identifiers of popular songs by a
-certain artist, given the artist’s name and the amount of songs to
-be retrieved.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>artist_name</strong> – the name of an artist</p></li>
-<li><p><strong>n_songs</strong> – the amount of songs to be retrieved</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yield</dt>
-<dd class="field-even"><p>an integer that uniquely identifies the song</p>
 </dd>
 </dl>
 </dd></dl>
@@ -325,6 +306,25 @@ with optional query parameters.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a dictionary representing the response of the API</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="method">
+<dt id="tflyrics.genius.Genius.resources">
+<code class="sig-name descname">resources</code><span class="sig-paren">(</span><em class="sig-param">artist_name: str</em>, <em class="sig-param">n_songs: int = 5</em><span class="sig-paren">)</span> → int<a class="headerlink" href="#tflyrics.genius.Genius.resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the IDs of popular songs by a certain artist.</p>
+<p>One at a time, yield the unique identifiers of popular songs by a
+certain artist, given the artist’s name and the amount of songs to
+be retrieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist_name</strong> – the name of an artist</p></li>
+<li><p><strong>n_songs</strong> – the amount of songs to be retrieved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yield</dt>
+<dd class="field-even"><p>an integer that uniquely identifies the song</p>
 </dd>
 </dl>
 </dd></dl>

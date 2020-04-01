@@ -45,7 +45,7 @@
   
   
   
-    <title>tflyrics &#8212; tflyrics 0.1 documentation</title>
+    <title>tflyrics &#8212; tflyrics 0.2.1 documentation</title>
     <link rel="stylesheet" href="_static/material.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -88,7 +88,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="#" title="tflyrics 0.1 documentation"
+        <a href="#" title="tflyrics 0.2.1 documentation"
            class="md-header-nav__button md-logo">
           
             <i class="md-icon">subject</i>
@@ -100,7 +100,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">tflyrics 0.1 documentation</span>
+          <span class="md-header-nav__topic">tflyrics 0.2.1 documentation</span>
           <span class="md-header-nav__topic"> tflyrics </span>
         </div>
       </div>
@@ -163,7 +163,7 @@
   <nav class="md-tabs" data-md-component="tabs">
     <div class="md-tabs__inner md-grid">
       <ul class="md-tabs__list">
-          <li class="md-tabs__item"><a href="#" class="md-tabs__link">tflyrics 0.1 documentation</a></li>
+          <li class="md-tabs__item"><a href="#" class="md-tabs__link">tflyrics 0.2.1 documentation</a></li>
       </ul>
     </div>
   </nav>
@@ -175,13 +175,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="#" title="tflyrics 0.1 documentation" class="md-nav__button md-logo">
+    <a href="#" title="tflyrics 0.2.1 documentation" class="md-nav__button md-logo">
       
         <i class="md-icon">subject</i>
       
     </a>
     <a href="#"
-       title="tflyrics 0.1 documentation">tflyrics 0.1 documentation</a>
+       title="tflyrics 0.2.1 documentation">tflyrics 0.2.1 documentation</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/ggiuffre/tf-lyrics" title="Go to repository" class="md-source" data-md-source="github">
@@ -211,7 +211,11 @@
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="">
-        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link">tflyrics</a>
+        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link">tflyrics</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#installation" class="md-nav__link">Installation</a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#reference" class="md-nav__link">Reference</a>
         </li>
@@ -265,6 +269,18 @@ it you can either pass it under the <code class="docutils literal notranslate"><
 constructor, or store it as en environment variable (with <code class="docutils literal notranslate"><span class="pre">export</span>
 <span class="pre">GENIUS_ACCESS_TOKEN='&lt;your</span> <span class="pre">token</span> <span class="pre">here&gt;'</span></code>). <code class="docutils literal notranslate"><span class="pre">tflyrics</span></code> will detect this
 environment variable automatically, if it exists.</p>
+
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can install this package with <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -q tflyrics
+</pre></div>
+</div>
+<p>Or, if you want the latest (possibly not stable) version, you can install
+<code class="docutils literal notranslate"><span class="pre">tflyrics</span></code> from source with:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -e git+https://github.com/ggiuffre/tf-lyrics.git#egg<span class="o">=</span>tflyrics
+</pre></div>
+</div>
+
 
 
 <h1 id="reference">Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
