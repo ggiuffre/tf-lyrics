@@ -1,6 +1,21 @@
 from tflyrics import LyricsGenerator, default_vocab
 import itertools
+import pytest
 import tensorflow as tf
+
+
+
+@pytest.fixture(scope='module')
+def artists():
+    return ['Bob Dylan', 'Shabazz Palaces']
+
+@pytest.fixture(scope='module')
+def per_artist():
+    return 3
+
+@pytest.fixture(scope='module')
+def example_correct_gen(artists, per_artist):
+    return LyricsGenerator(artists=artists, per_artist=per_artist)
 
 
 
@@ -39,13 +54,11 @@ def test_vocabulary():
     gen3 = LyricsGenerator(vocabulary=custom_vocab)
     assert gen3.vocabulary == custom_vocab
 
-def test_num_songs():
+def test_num_songs(example_correct_gen, artists, per_artist):
     """A LyricsGenerator has a list of songs whose length is at most the
     product of the number of artists and the number of songs per artist."""
 
-    artists = ['Bob Dylan', 'Shabazz Palaces']
-    per_artist = 3
-    gen = LyricsGenerator(artists=artists, per_artist=per_artist)
+    gen = example_correct_gen
     assert len(gen.songs) <= len(artists) * per_artist
 
 def test_fake_artist():
@@ -57,17 +70,15 @@ def test_fake_artist():
     gen = LyricsGenerator(artists=artists, per_artist=per_artist)
     assert len(gen.songs) == 0
 
-def test_as_dataset():
+def test_as_dataset(example_correct_gen, artists, per_artist):
     """A LyricsGenerator can provide a TensorFlow Dataset object with
     a predictable shape."""
 
-    artists = ['Bob Dylan', 'Shabazz Palaces']
-    per_artist = 3
-    gen1 = LyricsGenerator(artists=artists, per_artist=per_artist)
+    gen = example_correct_gen
 
     batch_size = 2
     seq_length = 50
-    ds1 = gen1.as_dataset(batch_size=batch_size, seq_length=seq_length)
+    ds1 = gen.as_dataset(batch_size=batch_size, seq_length=seq_length)
 
     assert isinstance(ds1, tf.data.Dataset)
     assert len(ds1.element_spec) == 2

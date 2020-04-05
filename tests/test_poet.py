@@ -1,6 +1,7 @@
 from tflyrics import Poet, default_vocab
 import itertools
 import pytest
+import shutil
 import tensorflow as tf
 
 
@@ -94,6 +95,7 @@ def test_restore():
     p.restore()
     w2 = p.weights
     assert w1 == w2
+    shutil.rmtree(p.checkpoint_dir)
 
     # train a Poet on the dataset, without saving checkpoints:
     p = Poet()
