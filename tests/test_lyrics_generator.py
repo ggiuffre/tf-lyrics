@@ -1,4 +1,4 @@
-from .context import LyricsGenerator, default_vocab
+from tflyrics import LyricsGenerator, default_vocab
 import itertools
 import tensorflow as tf
 

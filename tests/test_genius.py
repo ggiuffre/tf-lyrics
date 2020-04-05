@@ -1,4 +1,4 @@
-from .context import Genius
+from tflyrics.genius import Genius
 import itertools
 import pytest
 import tensorflow as tf

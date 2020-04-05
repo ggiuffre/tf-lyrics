@@ -1,4 +1,4 @@
-from .context import Poet, default_vocab
+from tflyrics import Poet, default_vocab
 import itertools
 import pytest
 import tensorflow as tf
