@@ -1,8 +1,16 @@
-from tflyrics import Poet, default_vocab
+from tflyrics import Poet, LyricsGenerator, default_vocab
 import itertools
 import pytest
 import shutil
 import tensorflow as tf
+
+
+
+@pytest.fixture(scope='module')
+def example_correct_gen():
+    artists = ['Bob Dylan', 'Shabazz Palaces']
+    per_artist = 3
+    return LyricsGenerator(artists=artists, per_artist=per_artist)
 
 
 
@@ -15,7 +23,8 @@ def test_creation():
         'name': 'test_name',
         'vocabulary': ['a', 'b', 'c'],
         'embdedding_dim': 23,
-        'rnn_units': 17
+        'rnn_units': 17,
+        'batch_size': 4
         }
 
     # verify that arguments to the constructor are all optional:
@@ -56,7 +65,7 @@ def test_batch_size():
         p.batch_size = s
         assert p.model.input_shape == (s, None)
 
-def test_train():
+def test_train(example_correct_gen):
     """It is possible to train a Poet on a TensorFlow Dataset object."""
 
     # create a mock dataset:
@@ -79,6 +88,14 @@ def test_train():
     assert 'loss' in hist_2
     assert isinstance(hist_2['loss'], list)
     assert len(hist_2['loss']) == n_epochs
+
+    # train a Poet on a LyricsGenerator:
+    p1 = Poet(rnn_units=256, batch_size=16)
+    hist_1 = p1.train_on(example_correct_gen)
+    assert isinstance(hist_1, dict)
+    assert 'loss' in hist_1
+    assert isinstance(hist_1['loss'], list)
+    text_1 = p1.generate('Abc', n_gen_chars=26)
 
 def test_restore():
     """It is possible to save a checkpoint at each epoch when training a Poet.

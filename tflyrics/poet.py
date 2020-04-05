@@ -2,6 +2,7 @@ import os, warnings
 from time import time
 import tensorflow as tf
 from tflyrics.constants import default_vocab
+from tflyrics.lyrics_generator import LyricsGenerator
 
 
 
@@ -14,7 +15,7 @@ class Poet:
     """
 
     def __init__(self, name: str = None, vocabulary: list = None,
-        embedding_dim: int = 256, rnn_units: int = 1024):
+        embedding_dim: int = 256, rnn_units: int = 1024, batch_size: int = 32):
         """Create a Poet.
 
         Create a Poet, optionally specifying its name, embedding
@@ -24,6 +25,7 @@ class Poet:
         :param vocabulary: list of unicode characters accepted by the model
         :param embedding_dim: output dimensionality of the hidden layer
         :param rnn_units: number of units in the hidden layer
+        :param batch_size: expected batch size for the training input
         """
 
         # assign an identifier to the Poet object:
@@ -36,7 +38,8 @@ class Poet:
         # remember the model's architecture:
         self.embedding_dim = embedding_dim
         self.rnn_units = rnn_units
-        self.build_model()
+        self.batch_size = batch_size
+        self.build_model(batch_size)
 
     @property
     def batch_size(self) -> int:
@@ -94,27 +97,37 @@ class Poet:
             tf.keras.layers.Dense(vocab_size)
             ])
 
-    def train_on(self, train_dataset: tf.data.Dataset,
-        val_dataset: tf.data.Dataset = None, n_epochs: int = 1,
-        checkpoints: bool = False) -> dict:
+    def train_on(self, train_data: object, val_data: object = None,
+        n_epochs: int = 1, checkpoints: bool = False) -> dict:
         """Train the Poet's internal model on a dataset.
 
         Train the Poet's internal model on a TensorFlow Dataset containing
-        batches of sequences of text (encoded as integers). Optionally specify
-        the number of epochs, and whether a checkpoint of the model should be
+        batches of sequences of text (encoded as integers). You can also add a
+        validation dataset as a separate argument. Optionally specify
+        the number of epochs (by default just 1 epoch), and whether a checkpoint of the model should be
         saved at the end of each training epoch. Returns the training history,
         as a dictionary whose values are lists; each list represents a metric,
         and each element in the list is the value of that metric at a certain
         epoch.
 
-        :param train_dataset: TensorFlow Dataset of batches of sequences
+        :param train_data: LyricsGenerator or TensorFlow Dataset
+        :param val_data: LyricsGenerator or TensorFlow Dataset
         :param n_epochs: number of training epochs
         :param checkpoints: whether or not to save checkpoints of the model
         :return: the training history, as a dictionary of lists
         """
 
-        # change the internal model to have adequate training batch size:
-        self.batch_size = train_dataset.element_spec[0].shape[0]
+        # match the batch sizes of model and data:
+        if isinstance(train_data, tf.data.Dataset):
+            self.batch_size = train_data.element_spec[0].shape[0]
+            train_dataset = train_data
+            val_dataset = val_data
+        elif isinstance(train_data, LyricsGenerator):
+            batch_size = self.batch_size
+            train_dataset = train_data.as_dataset(batch_size=batch_size)
+            if val_data is not None:
+                val_dataset = val_data.as_dataset(batch_size=batch_size)
+            else: val_dataset = val_data
 
         # declare a list of callbacks to be run afer each epoch:
         callbacks = []

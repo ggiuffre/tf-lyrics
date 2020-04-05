@@ -213,6 +213,8 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link">tflyrics</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#usage" class="md-nav__link">Usage</a>
+        </li>
         <li class="md-nav__item"><a href="#installation" class="md-nav__link">Installation</a>
         </li></ul>
             </nav>
@@ -246,15 +248,15 @@ work was inspired from <a class="reference external" href="http://karpathy.githu
 Networks</a> and
 <a class="reference external" href="https://www.tensorflow.org/tutorials/text/text_generation">Text generation with an
 RNN</a>.</p>
-<p>Example:</p>
+
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tflyrics</span> <span class="kn">import</span> <span class="n">Poet</span><span class="p">,</span> <span class="n">LyricsGenerator</span>
 
 <span class="n">artists</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Bob Dylan'</span><span class="p">,</span> <span class="s1">'Tim Buckley'</span><span class="p">,</span> <span class="s1">'The Beatles'</span><span class="p">]</span>
 <span class="n">gen</span> <span class="o">=</span> <span class="n">LyricsGenerator</span><span class="p">(</span><span class="n">artists</span><span class="p">,</span> <span class="n">per_artist</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">as_dataset</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">Poet</span><span class="p">()</span>
-<span class="n">p</span><span class="o">.</span><span class="n">train_on</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">train_on</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">poem</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start_string</span><span class="o">=</span><span class="s1">'Hey '</span><span class="p">,</span> <span class="n">n_gen_chars</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">poem</span><span class="p">)</span>
 </pre></div>
@@ -262,6 +264,8 @@ RNN</a>.</p>
 <p>Quick paraphrase: a <code class="docutils literal notranslate"><span class="pre">LyricsGenerator</span></code> object makes it easy for you to create a
 data pipeline that feeds from the Genius API directly into a recurrent neural
 network; a <code class="docutils literal notranslate"><span class="pre">Poet</span></code> object is a wrapper around a recurrent neural network.</p>
+<p>Another, more data-intensive example can be found on
+<a class="reference external" href="https://colab.research.google.com/drive/1OIYUbRawG5YEuQMunrR6Ox8S2UVI_Q6E">Google Colab</a>.</p>
 <p>Note that the Genius API requires you to have an <strong>access token</strong>. Without
 that, <code class="docutils literal notranslate"><span class="pre">tflyrics</span></code> won’t be able to get lyrics for you. You can get an access
 token for free at <a class="reference external" href="https://docs.genius.com/">docs.genius.com</a>. Once you have
@@ -269,6 +273,7 @@ it you can either pass it under the <code class="docutils literal notranslate"><
 constructor, or store it as en environment variable (with <code class="docutils literal notranslate"><span class="pre">export</span>
 <span class="pre">GENIUS_ACCESS_TOKEN='&lt;your</span> <span class="pre">token</span> <span class="pre">here&gt;'</span></code>). <code class="docutils literal notranslate"><span class="pre">tflyrics</span></code> will detect this
 environment variable automatically, if it exists.</p>
+
 
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>You can install this package with <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>

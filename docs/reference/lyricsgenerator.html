@@ -55,7 +55,7 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The Genius class" href="genius.html" />
+    <link rel="next" title="The TextProvider class" href="textprovider.html" />
     <link rel="prev" title="The Poet class" href="poet.html" />
   
    
@@ -229,7 +229,7 @@
 <h1 id="reference-lyricsgenerator--page-root">The <cite>LyricsGenerator</cite> class<a class="headerlink" href="#reference-lyricsgenerator--page-root" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="tflyrics.LyricsGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">tflyrics.</code><code class="sig-name descname">LyricsGenerator</code><span class="sig-paren">(</span><em class="sig-param">artists: list = []</em>, <em class="sig-param">per_artist: int = 5</em>, <em class="sig-param">vocabulary: list = None</em>, <em class="sig-param">token: str = None</em><span class="sig-paren">)</span><a class="headerlink" href="#tflyrics.LyricsGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">tflyrics.</code><code class="sig-name descname">LyricsGenerator</code><span class="sig-paren">(</span><em class="sig-param">artists: list = []</em>, <em class="sig-param">per_artist: int = 5</em>, <em class="sig-param">vocabulary: list = None</em>, <em class="sig-param">text_provider: tflyrics.text_provider.TextProvider = None</em><span class="sig-paren">)</span><a class="headerlink" href="#tflyrics.LyricsGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>An adapter between the Genius API and a TF Dataset.</p>
 <p>A LyricsGenerator object queries the Genius API and provides a TensorFlow
 Dataset that can be fed to a model for training. Each sample of the dataset
@@ -306,12 +306,12 @@ sequences of integers rather than characters.</p>
             </a>
           
           
-            <a href="genius.html" title="Admonition"
+            <a href="textprovider.html" title="Admonition"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> Next </span> The <cite>Genius</cite> class </span>
+                class="md-footer-nav__direction"> Next </span> The <cite>TextProvider</cite> class </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
