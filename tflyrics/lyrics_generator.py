@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tflyrics.text_provider import TextProvider
 from tflyrics.genius import Genius
 from tflyrics.constants import default_vocab
 
@@ -17,17 +18,19 @@ class LyricsGenerator:
     """
 
     def __init__(self, artists: list = [], per_artist: int = 5,
-        vocabulary: list = None, token: str = None):
+        vocabulary: list = None, text_provider: TextProvider = None):
         """Create a LyricsGenerator object.
 
         Create a LyricsGenerator object that will provide lyrics from a
         specified set of artists, and will filter those lyrics to only include
         characters from a vocabulary of specified unicode characters.
+        Optionally pass a TextProvider object that the LyricsGenerator should
+        use (the default is a Genius object).
 
         :param artists: list of artists whose songs should be included
         :param per_artist: number of songs to include per artist
         :param vocabulary: the unicode characters accepted by the object
-        :param token: a token to access the Genius API
+        :param text_provider: a proxy to a collection of text resources
         """
 
         # declare what characters the dataset can accept:
@@ -38,12 +41,12 @@ class LyricsGenerator:
             tf.lookup.KeyValueTensorInitializer(keys_tensor, vals_tensor), -1)
 
         # create a Genius object to fetch lyrics:
-        self.genius = Genius(token)
+        self.text_provider = text_provider or Genius()
 
         # mark which songs should be downloaded:
         self.songs = []
         for a in artists:
-            for s in self.genius.resources(a, per_artist):
+            for s in self.text_provider.resources(a, per_artist):
                 print('LyricsGenerator:',
                     'adding {} by {} to wishlist'.format(s, a))
                 self.songs.append(s)
@@ -71,7 +74,7 @@ class LyricsGenerator:
 
         # create a function that maps song IDs to song lyrics:
         def get_song_lyrics(s):
-            l = tf.py_function(self.genius.get_text, [s], tf.string)
+            l = tf.py_function(self.text_provider.get_text, [s], tf.string)
             return tf.data.Dataset.from_tensors(tf.reshape(l, ()))
 
         # create a dataset of song lyrics, where each sample is a song:
