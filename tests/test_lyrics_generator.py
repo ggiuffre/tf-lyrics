@@ -1,4 +1,5 @@
 from tflyrics import LyricsGenerator, default_vocab
+from tflyrics.genius import Genius
 import itertools
 import pytest
 import tensorflow as tf
@@ -28,7 +29,7 @@ def test_creation():
         'artists': ['Testament', 'Testonius Monk', 'Test Buckley'],
         'per_artist': 3,
         'vocabulary': ['a', 'b', 'c'],
-        'token': 'mock_access_token'
+        'text_provider': Genius()
         }
 
     # verify that arguments to the constructor are all optional:

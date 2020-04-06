@@ -27,7 +27,7 @@ class TextProvider(ABC):
         super(ABC, self).__init__()
 
     @abstractmethod
-    def resources(self, **params)-> int:
+    def resources(self, **params) -> int:
         """Generate the IDs of a specified set of resources.
 
         One at a time, yield the unique identifiers of some resources that

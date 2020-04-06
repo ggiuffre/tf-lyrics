@@ -66,7 +66,8 @@ def test_batch_size():
         assert p.model.input_shape == (s, None)
 
 def test_train(example_correct_gen):
-    """It is possible to train a Poet on a TensorFlow Dataset object."""
+    """It is possible to train a Poet on a TensorFlow Dataset object or on a
+    TextProvider object."""
 
     # create a mock dataset:
     ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))

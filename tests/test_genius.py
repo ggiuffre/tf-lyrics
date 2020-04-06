@@ -1,6 +1,6 @@
 from tflyrics.genius import Genius
+from tflyrics.text_provider import TextProvider
 import itertools
-import pytest
 import tensorflow as tf
 
 
@@ -21,6 +21,12 @@ def test_creation():
         for args in itertools.combinations(args_as_tuple, l):
             p = Genius(**dict(args_as_tuple))
             assert isinstance(p, Genius)
+
+def test_superclass():
+    """A Genius object is a TextProvider."""
+
+    g = Genius()
+    assert isinstance(g, TextProvider)
 
 def test_request():
     """A genius object can query the web API it has been created for, and
