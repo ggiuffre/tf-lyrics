@@ -84,3 +84,21 @@ def test_as_dataset(example_correct_gen, artists, per_artist):
     assert len(ds1.element_spec) == 2
     assert ds1.element_spec[0].shape == (batch_size, seq_length)
     assert ds1.element_spec[1].shape == (batch_size, seq_length)
+
+@pytest.mark.parametrize('seq_length', [51, 100, 123])
+def test_preprocess(seq_length):
+    """A LyricsGenerator can turn a string into multiple sequences of integers
+    whose character representations are subsequences of the original string."""
+
+    gen = LyricsGenerator()
+    string = 'abcdefghijklmnopqrstuvwxyz' * 234
+    print(type(seq_length))
+    subsequences = gen.preprocess(string, seq_length=seq_length)
+
+    assert isinstance(subsequences, tf.Tensor)
+
+    expected_shape = [len(string) // (seq_length + 1), (seq_length + 1)]
+    assert subsequences.shape.as_list() == expected_shape
+
+    for seq in subsequences:
+        assert ''.join([gen.vocabulary[i] for i in seq]) in string

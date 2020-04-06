@@ -104,7 +104,7 @@ class LyricsGenerator:
         return dataset
 
     @tf.function
-    def preprocess(self, text: str, seq_length: int = 100) -> list:
+    def preprocess(self, text: str, seq_length: int = 100) -> tf.Tensor:
         """Split the lyrics of a song into multiple substrings.
 
         Preprocess a string containing lyrics, extracting substrings that
@@ -113,7 +113,7 @@ class LyricsGenerator:
 
         :param text: a string containing lyrics
         :param seq_length: fixed size of each output sequence
-        :return: a list of substrings extracted from the song, as lists of ints
+        :return: a list of subsequences, as a 2D tensor of ints
         """
 
         # convert the string to a list of integers:

@@ -83,11 +83,15 @@ def test_resources():
     gen = g.resources('tRqZDkVuppLYZcSplOOn')
     assert len(list(gen)) == 0
 
-def test_get_song_lyrics():
+def test_get_text():
     """A Genius object can return a string containing the lyrics of a song,
     given the Genius ID of the song."""
 
     g = Genius()
     song_id = 262016
+    lyrics = g.get_text(song_id)
+    assert isinstance(lyrics, str)
+
+    song_id = tf.constant(song_id)
     lyrics = g.get_text(song_id)
     assert isinstance(lyrics, str)

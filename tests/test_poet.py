@@ -70,7 +70,7 @@ def test_train(example_correct_gen):
 
     # create a mock dataset:
     ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))
-    ds = ds.repeat(33).batch(4, drop_remainder=True)
+    ds = ds.repeat(13).batch(4, drop_remainder=True)
 
     # train a Poet on the dataset:
     p1 = Poet(rnn_units=256)
@@ -91,11 +91,19 @@ def test_train(example_correct_gen):
 
     # train a Poet on a LyricsGenerator:
     p1 = Poet(rnn_units=256, batch_size=16)
-    hist_1 = p1.train_on(example_correct_gen)
-    assert isinstance(hist_1, dict)
-    assert 'loss' in hist_1
-    assert isinstance(hist_1['loss'], list)
-    text_1 = p1.generate('Abc', n_gen_chars=26)
+    hist_3 = p1.train_on(example_correct_gen)
+    assert isinstance(hist_3, dict)
+    assert 'loss' in hist_3
+    assert isinstance(hist_3['loss'], list)
+    text_3 = p1.generate('Abc', n_gen_chars=26)
+
+    # train a Poet on both training and validation generators:
+    val_gen = LyricsGenerator(['Abba'], 1)
+    hist_4 = p1.train_on(example_correct_gen, val_data=val_gen)
+    assert isinstance(hist_4, dict)
+    assert 'loss' in hist_4
+    assert isinstance(hist_4['loss'], list)
+    text_4 = p1.generate('Abc', n_gen_chars=11)
 
 def test_restore():
     """It is possible to save a checkpoint at each epoch when training a Poet.
@@ -103,7 +111,7 @@ def test_restore():
 
     # create a mock dataset:
     ds = tf.data.Dataset.from_tensors((tf.range(20), tf.range(20) + 1))
-    ds = ds.repeat(33).batch(4, drop_remainder=True)
+    ds = ds.repeat(13).batch(4, drop_remainder=True)
 
     # train a Poet on the dataset, saving checkpoints:
     p = Poet()
